@@ -9,7 +9,7 @@ class AuthenticateButton extends StatelessWidget {
     this.textColor,
     this.name,
     this.image,
-    required this.onPress,
+    this.onPress,
     this.isShadow = false,
     this.isLoader = false,
   });
@@ -19,7 +19,7 @@ class AuthenticateButton extends StatelessWidget {
   final String? name;
   final String? image;
   final bool isShadow;
-  final void Function() onPress;
+  final void Function()? onPress;
   final bool isLoader;
 
   @override

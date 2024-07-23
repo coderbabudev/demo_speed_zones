@@ -37,7 +37,6 @@ class _LoginViewState extends State<LoginView> {
               controller: loginValue.emailController,
               hintText: AppStrings.inputEmail,
               prefixIcon: Assets.enableEmail,
-              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 24),
             AuthTextField(
@@ -49,7 +48,6 @@ class _LoginViewState extends State<LoginView> {
               prefixIcon: Assets.enablePassword,
               suffixOnPress: () => loginValue.showHidePassword(),
               obscureText: loginValue.showPassword.value ? false : true,
-              keyboardType: TextInputType.emailAddress,
             ),
             const SizedBox(height: 24),
             Row(

@@ -64,7 +64,6 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               prefixIcon: Assets.enablePassword,
               suffixOnPress: () {},
               obscureText: true,
-              keyboardType: TextInputType.visiblePassword,
             ).paddingOnly(top: 48),
             AuthTextField(
               controller: TextEditingController(),
@@ -73,7 +72,6 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               prefixIcon: Assets.enablePassword,
               suffixOnPress: () {},
               obscureText: true,
-              keyboardType: TextInputType.visiblePassword,
             ).paddingOnly(top: 32),
             const Spacer(),
             AuthenticateButton(

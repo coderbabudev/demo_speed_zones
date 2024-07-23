@@ -62,7 +62,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               controller: TextEditingController(),
               hintText: AppStrings.inputEmail,
               prefixIcon: Assets.enableEmail,
-              keyboardType: TextInputType.emailAddress,
             ).paddingOnly(top: 48),
             const Spacer(),
             AuthenticateButton(

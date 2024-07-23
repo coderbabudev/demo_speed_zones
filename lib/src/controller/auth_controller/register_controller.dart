@@ -1,4 +1,5 @@
 import 'package:demo_speed_zones/src/services/database_services.dart';
+import 'package:demo_speed_zones/src/utils/util.dart';
 import 'package:demo_speed_zones/src/views/home_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,11 +12,20 @@ class RegisterController extends GetxController {
   final mobileNumberController = TextEditingController();
   final otpController = TextEditingController();
   RxBool isMobileRegister = false.obs;
-  RxInt otpLength = 4.obs;
   RxBool isLoading = false.obs;
   RxBool showPassword = false.obs;
   RxBool isRemember = false.obs;
   final _db = DatabaseMethod();
+
+  @override
+  void onClose() {
+    emailController.dispose();
+    nameController.dispose();
+    passwordController.dispose();
+    mobileNumberController.dispose();
+    otpController.dispose();
+    super.onClose();
+  }
 
   void rememberMeCheck(bool value) {
     isRemember.value = value;
@@ -27,12 +37,16 @@ class RegisterController extends GetxController {
     update();
   }
 
+  void setLoading(bool value) {
+    isLoading.value = value;
+    update();
+  }
+
   Future<void> signUp({
     required String email,
     required String password,
     String? name,
   }) async {
-    isLoading.value = true;
     try {
       final userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -45,30 +59,37 @@ class RegisterController extends GetxController {
         'email': user.email,
         'imageUrl': user.photoURL ?? '',
       });
-      isLoading.value = false;
       Get.to(() => const HomeScreen());
-      Get.showSnackbar(
-        const GetSnackBar(
-          title: '',
-          message: 'Registered Successfully',
-          duration: Duration(seconds: 2),
-        ),
-      );
-      clearField();
+      showMessageSnackBar('Registered Successfully');
+      clearTextField();
     } on FirebaseAuthException catch (e) {
       if (e.code == "email-already-in-use") {
-        Get.showSnackbar(
-          const GetSnackBar(
-            title: '',
-            message: 'Account Already exists',
-            duration: Duration(seconds: 2),
-          ),
-        );
+        showMessageSnackBar('Account Already exists');
       }
     }
   }
 
-  clearField() {
+  textFieldValidation() {
+    const pattern =
+        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
+    final regex = RegExp(pattern);
+    if (nameController.text.isEmpty) {
+      showMessageSnackBar('Name field is required.');
+    } else if (nameController.text.length < 2) {
+      showMessageSnackBar('Name is too Short.');
+    } else if (emailController.text.isEmpty) {
+      showMessageSnackBar('Email field is required.');
+    } else if (!regex.hasMatch(emailController.text)) {
+      showMessageSnackBar('Enter a valid email address.');
+    } else if (passwordController.text.isEmpty) {
+      showMessageSnackBar('Password field is required.');
+    } else if (passwordController.text.length < 6) {
+      showMessageSnackBar('Password must be longer than 6 character');
+    } else {}
+    update();
+  }
+
+  clearTextField() {
     emailController.clear();
     nameController.clear();
     passwordController.clear();

@@ -1,7 +1,6 @@
 import 'package:demo_speed_zones/src/constants/color_constant.dart';
 import 'package:demo_speed_zones/src/constants/string_constants.dart';
 import 'package:demo_speed_zones/src/controller/auth_controller/register_controller.dart';
-import 'package:demo_speed_zones/src/services/validation_services.dart';
 import 'package:demo_speed_zones/src/views/forgot_password_screen.dart';
 import 'package:demo_speed_zones/src/widget/authentication_button.dart';
 import 'package:demo_speed_zones/src/widget/textField_widget.dart';
@@ -19,8 +18,9 @@ class RegisterView extends StatefulWidget {
 }
 
 class _RegisterViewState extends State<RegisterView> {
-  RegisterController registerController = Get.put(RegisterController());
-  GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
+  RegisterController registerController =
+      Get.put<RegisterController>(RegisterController());
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +28,7 @@ class _RegisterViewState extends State<RegisterView> {
       registerValue = registerController;
       return SingleChildScrollView(
         child: Form(
-          key: formKey,
+          key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -45,27 +45,12 @@ class _RegisterViewState extends State<RegisterView> {
                   controller: registerValue.nameController,
                   hintText: AppStrings.inputName,
                   prefixIcon: Assets.enableUser,
-                  keyboardType: TextInputType.name,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return 'Name field is required.';
-                    } else if (value.length <= 2) {
-                      return 'Name is too short.';
-                    } else {
-                      return '';
-                    }
-                  },
                 ).paddingOnly(bottom: 24),
               if (!registerValue.isMobileRegister.value)
                 AuthTextField(
                   controller: registerValue.emailController,
                   hintText: AppStrings.inputEmail,
                   prefixIcon: Assets.enableEmail,
-                  validator: (value) => validateEmail(value!) ?? '',
-                  keyboardType: TextInputType.emailAddress,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.allow(RegExp("[0-9@a-zA-Z.]")),
-                  ],
                 ).paddingOnly(bottom: 24),
               if (!registerValue.isMobileRegister.value)
                 AuthTextField(
@@ -75,15 +60,8 @@ class _RegisterViewState extends State<RegisterView> {
                       ? Icons.visibility_off_outlined
                       : Icons.visibility_outlined,
                   prefixIcon: Assets.enablePassword,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Password field is required.';
-                    }
-                    return '';
-                  },
                   suffixOnPress: () => registerValue.showHidePassword(),
                   obscureText: registerValue.showPassword.value ? false : true,
-                  keyboardType: TextInputType.emailAddress,
                 ).paddingOnly(bottom: 24),
               if (!registerValue.isMobileRegister.value)
                 Row(
@@ -183,13 +161,19 @@ class _RegisterViewState extends State<RegisterView> {
                 name: AppStrings.register,
                 isLoader: registerValue.isLoading.value,
                 onPress: () async {
-                  // if (formKey.currentState!.validate()) {
-                  //   formKey.currentState?.save();
-                  await registerValue.signUp(
+                  if (registerValue.emailController.text.isNotEmpty &&
+                      registerValue.nameController.text.isNotEmpty &&
+                      registerValue.passwordController.text.isNotEmpty) {
+                    registerValue.setLoading(true);
+                    await registerValue.signUp(
                       name: registerValue.nameController.text.trim(),
                       email: registerValue.emailController.text.trim(),
-                      password: registerValue.passwordController.text.trim());
-                  // }
+                      password: registerValue.passwordController.text.trim(),
+                    );
+                    registerValue.setLoading(false);
+                  } else {
+                    registerValue.textFieldValidation();
+                  }
                 },
                 image: '',
                 color: AppColors.primaryColor,

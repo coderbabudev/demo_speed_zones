@@ -92,7 +92,7 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                     Pinput(
                         controller: otpValue.otpController,
                         keyboardType: TextInputType.number,
-                        length: otpValue.otpLength.value,
+                        length: 4,
                         focusNode: FocusNode(canRequestFocus: false),
                         defaultPinTheme: buildPinTheme(),
                         focusedPinTheme: buildPinTheme(),

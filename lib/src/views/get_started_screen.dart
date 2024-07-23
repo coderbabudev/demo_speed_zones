@@ -2,6 +2,7 @@ import 'package:demo_speed_zones/src/constants/color_constant.dart';
 import 'package:demo_speed_zones/src/constants/string_constants.dart';
 import 'package:demo_speed_zones/src/views/login_register_screen.dart';
 import 'package:demo_speed_zones/src/widget/authentication_button.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -83,9 +84,9 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
           ),
           const Spacer(),
           RichText(
-            text: const TextSpan(
+            text: TextSpan(
               text: AppStrings.alreadyHaveAccount,
-              style: TextStyle(
+              style: const TextStyle(
                 color: AppColors.secondaryColor,
                 fontWeight: FontWeight.w400,
                 fontSize: 16,
@@ -93,7 +94,13 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
               children: [
                 TextSpan(
                   text: AppStrings.signIn,
-                  style: TextStyle(
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () {
+                      Get.to(
+                        () => const LoginAndRegisterScreen(),
+                      );
+                    },
+                  style: const TextStyle(
                     color: AppColors.primaryColor,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
