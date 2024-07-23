@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "616008436968",
+    "project_id": "fir-speed-zones",
+    "storage_bucket": "fir-speed-zones.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:616008436968:android:ab45a7e4f6618c7c364d5d",
+        "android_client_info": {
+          "package_name": "com.example.demo_speed_zones"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCTY591hZTNJDbZGUekknjAAMV6Zh_MQBU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
