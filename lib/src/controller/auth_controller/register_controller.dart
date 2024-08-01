@@ -5,6 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
+import '../../views/verify_otp_screen.dart';
+
 class RegisterController extends GetxController {
   final emailController = TextEditingController();
   final nameController = TextEditingController();
@@ -15,7 +17,10 @@ class RegisterController extends GetxController {
   RxBool isLoading = false.obs;
   RxBool showPassword = false.obs;
   RxBool isRemember = false.obs;
+  RxString verificationId = ''.obs;
+  RxString countryCode = '91'.obs;
   final _db = DatabaseMethod();
+  FirebaseAuth auth = FirebaseAuth.instance;
 
   @override
   void onClose() {
@@ -48,8 +53,7 @@ class RegisterController extends GetxController {
     String? name,
   }) async {
     try {
-      final userCredential =
-          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+      final userCredential = await auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
@@ -69,24 +73,28 @@ class RegisterController extends GetxController {
     }
   }
 
-  textFieldValidation() {
-    const pattern =
-        r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
-    final regex = RegExp(pattern);
-    if (nameController.text.isEmpty) {
-      showMessageSnackBar('Name field is required.');
-    } else if (nameController.text.length < 2) {
-      showMessageSnackBar('Name is too Short.');
-    } else if (emailController.text.isEmpty) {
-      showMessageSnackBar('Email field is required.');
-    } else if (!regex.hasMatch(emailController.text)) {
-      showMessageSnackBar('Enter a valid email address.');
-    } else if (passwordController.text.isEmpty) {
-      showMessageSnackBar('Password field is required.');
-    } else if (passwordController.text.length < 6) {
-      showMessageSnackBar('Password must be longer than 6 character');
-    } else {}
-    update();
+  Future<void> signUpWithPhoneNumber(String phoneNumber, String code) async {
+    await auth.verifyPhoneNumber(
+      phoneNumber: '+$code $phoneNumber',
+      timeout: const Duration(seconds: 60),
+      verificationCompleted: (PhoneAuthCredential credential) async {
+        print("credential :- $credential");
+      },
+      verificationFailed: (FirebaseAuthException e) {
+        print(e.message);
+      },
+      codeSent: (String verificationId, int? resendToken) {
+        Get.to(
+          () => VerifyOTPScreen(
+            isFrom: "PHONE",
+            mobileNumber: phoneNumber,
+            verificationId: verificationId,
+          ),
+        );
+        update();
+      },
+      codeAutoRetrievalTimeout: (String verificationId) {},
+    );
   }
 
   clearTextField() {

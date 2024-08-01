@@ -12,7 +12,20 @@
           "package_name": "com.example.demo_speed_zones"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "616008436968-pikhqutpohegic90m1igqtvh7j2lv47i.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.demo_speed_zones",
+            "certificate_hash": "a83940b0fcdc409c92ce07cf2f22260b16cc1a18"
+          }
+        },
+        {
+          "client_id": "616008436968-dcu96nofbhdb921hopoe1pjqljf1qpeb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyCTY591hZTNJDbZGUekknjAAMV6Zh_MQBU"
@@ -20,7 +33,19 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "616008436968-dcu96nofbhdb921hopoe1pjqljf1qpeb.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "616008436968-vhll3h4vhmve5857bemj3r66lfk7fv41.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.demoSpeedZones"
+              }
+            }
+          ]
         }
       }
     }

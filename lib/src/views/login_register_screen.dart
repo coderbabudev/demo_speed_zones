@@ -1,12 +1,15 @@
 import 'package:demo_speed_zones/src/constants/color_constant.dart';
 import 'package:demo_speed_zones/src/constants/string_constants.dart';
+import 'package:demo_speed_zones/src/utils/util.dart';
 import 'package:demo_speed_zones/src/widget/login_View_widget.dart';
 import 'package:demo_speed_zones/src/widget/register_view_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class LoginAndRegisterScreen extends StatefulWidget {
-  const LoginAndRegisterScreen({super.key});
+  const LoginAndRegisterScreen({super.key, this.isWhichFrom = false});
+
+  final bool isWhichFrom;
 
   @override
   State<LoginAndRegisterScreen> createState() => _LoginAndRegisterScreenState();
@@ -20,6 +23,9 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
   void initState() {
     super.initState();
     tabController = TabController(length: 2, vsync: this);
+    if (widget.isWhichFrom) {
+      tabController.index = 1;
+    }
   }
 
   @override
@@ -35,27 +41,7 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            GestureDetector(
-              onTap: () => Get.back(),
-              child: Container(
-                height: 40,
-                width: 40,
-                margin: const EdgeInsets.only(top: 15, bottom: 32),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: AppColors.secondaryColor,
-                  ),
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.arrow_back_rounded,
-                    size: 20,
-                    color: AppColors.blackColor,
-                  ),
-                ),
-              ),
-            ),
+            backButton(onTap: () => Get.back()),
             Center(
               child: Container(
                 height: 55,

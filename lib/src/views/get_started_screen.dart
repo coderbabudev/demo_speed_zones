@@ -1,5 +1,6 @@
 import 'package:demo_speed_zones/src/constants/color_constant.dart';
 import 'package:demo_speed_zones/src/constants/string_constants.dart';
+import 'package:demo_speed_zones/src/controller/dashboard_controller.dart';
 import 'package:demo_speed_zones/src/views/login_register_screen.dart';
 import 'package:demo_speed_zones/src/widget/authentication_button.dart';
 import 'package:flutter/gestures.dart';
@@ -14,6 +15,8 @@ class GetStartedScreen extends StatefulWidget {
 }
 
 class _GetStartedScreenState extends State<GetStartedScreen> {
+  DashboardController controller = Get.put(DashboardController());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -50,39 +53,41 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
                 color: AppColors.lightGreyColor,
                 textColor: AppColors.blackColor,
                 onPress: () {
-                  Get.to(() => const LoginAndRegisterScreen());
+                  controller.whichFrom.value = true;
+                  Get.to(() => LoginAndRegisterScreen(
+                      isWhichFrom: controller.whichFrom.value));
                 },
               ),
               const SizedBox(height: 24),
-              const Text(
-                AppStrings.instantSignUp,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: AppColors.secondaryColor,
-                  fontWeight: FontWeight.normal,
-                ),
-              )
+              // const Text(
+              //   AppStrings.instantSignUp,
+              //   style: TextStyle(
+              //     fontSize: 16,
+              //     color: AppColors.secondaryColor,
+              //     fontWeight: FontWeight.normal,
+              //   ),
+              // )
             ],
           ).paddingOnly(top: 20),
-          AuthenticateButton(
-            image: Assets.googleLogo,
-            name: AppStrings.signUpGoogle,
-            color: AppColors.primaryColor,
-            onPress: () {},
-          ),
-          AuthenticateButton(
-            image: Assets.appleLogo,
-            name: AppStrings.signUpApple,
-            color: AppColors.blackColor,
-            onPress: () {},
-          ),
-          AuthenticateButton(
-            image: Assets.facebookLogo,
-            name: AppStrings.signUpFacebook,
-            color: const Color(0xFF1773EA),
-            onPress: () {},
-          ),
-          const Spacer(),
+          // AuthenticateButton(
+          //   image: Assets.googleLogo,
+          //   name: AppStrings.signUpGoogle,
+          //   color: AppColors.primaryColor,
+          //   onPress: () {},
+          // ),
+          // AuthenticateButton(
+          //   image: Assets.appleLogo,
+          //   name: AppStrings.signUpApple,
+          //   color: AppColors.blackColor,
+          //   onPress: () {},
+          // ),
+          // AuthenticateButton(
+          //   image: Assets.facebookLogo,
+          //   name: AppStrings.signUpFacebook,
+          //   color: const Color(0xFF1773EA),
+          //   onPress: () {},
+          // ),
+          // const Spacer(),
           RichText(
             text: TextSpan(
               text: AppStrings.alreadyHaveAccount,

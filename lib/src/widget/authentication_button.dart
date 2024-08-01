@@ -1,5 +1,4 @@
 import 'package:demo_speed_zones/src/constants/color_constant.dart';
-import 'package:demo_speed_zones/src/constants/string_constants.dart';
 import 'package:flutter/material.dart';
 
 class AuthenticateButton extends StatelessWidget {
@@ -61,9 +60,7 @@ class AuthenticateButton extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 16,
                         color: textColor ?? AppColors.whiteColor,
-                        fontWeight: name == AppStrings.signUpEmail
-                            ? FontWeight.w500
-                            : FontWeight.w400,
+                        fontWeight: FontWeight.w500,
                       ),
                     )
             ],
