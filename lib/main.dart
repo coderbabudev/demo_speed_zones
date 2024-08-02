@@ -1,13 +1,11 @@
-import 'package:demo_speed_zones/src/constants/color_constant.dart';
-import 'package:demo_speed_zones/src/views/join_circle_splash_screen.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:demo_speed_zones/core/constants/color_constant.dart';
+import 'package:demo_speed_zones/features/splash/presentation/pages/splash_screen.dart';
+import 'package:demo_speed_zones/injection_container/injection_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
-
+Future<void> main() async {
+  await init();
   runApp(const MyApp());
 }
 
@@ -21,10 +19,13 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
         fontFamily: 'Outfit',
-        primaryColor: AppColors.primaryColor,
-        scaffoldBackgroundColor: AppColors.primaryColor,
+        appBarTheme:
+            const AppBarTheme(backgroundColor: ColorConstant.whiteColor),
+        primaryColor: ColorConstant.primaryColor,
+        scaffoldBackgroundColor: ColorConstant.primaryColor,
+        useMaterial3: false,
       ),
-      home: JoinCircleSplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
