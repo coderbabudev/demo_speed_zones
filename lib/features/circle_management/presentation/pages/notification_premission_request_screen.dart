@@ -1,9 +1,11 @@
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/core/utils/util.dart';
 import 'package:demo_speed_zones/features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../../core/presentation/widget/authentication_button.dart';
 
@@ -12,6 +14,17 @@ class NotificationPerRequestScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Future<void> requestLocationPermission() async {
+      final status = await Permission.location.request();
+      if (status.isGranted) {
+        Get.offAll(() => const DashboardScreen());
+      } else if (status.isDenied) {
+        showMessageSnackBar('Location permission is Denied');
+      } else if (status.isPermanentlyDenied) {
+        openAppSettings();
+      }
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Column(
@@ -22,7 +35,7 @@ class NotificationPerRequestScreen extends StatelessWidget {
               child: Container(
                 height: 40,
                 width: 40,
-                margin: const EdgeInsets.only(top: 31, bottom: 32, left: 20),
+                margin: const EdgeInsets.only(top: 16, bottom: 32, left: 20),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   border: Border.all(
@@ -95,7 +108,11 @@ class NotificationPerRequestScreen extends StatelessWidget {
             AuthenticateButton(
               image: "",
               textColor: ColorConstant.blackTextColor,
-              onPress: () => Get.offAll(() => const DashboardScreen()),
+              onPress: () {
+                requestLocationPermission().then((value) {
+                  Get.offAll(() => const DashboardScreen());
+                });
+              },
               color: ColorConstant.whiteColor,
               name: StringConstant.allowNotification,
             ).paddingOnly(top: 116, bottom: 38, left: 24, right: 24),

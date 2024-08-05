@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
+import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/notification_premission_request_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
 import '../../../../core/presentation/widget/authentication_button.dart';
 
@@ -21,15 +19,7 @@ class SelectProfilePictureScreen extends StatefulWidget {
 
 class _SelectProfilePictureScreenState
     extends State<SelectProfilePictureScreen> {
-  File? imageFile;
-
-  Future<void> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      imageFile = File(pickedFile.path);
-    }
-  }
+  final circleManagementController = Get.find<CircleManagementController>();
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +38,7 @@ class _SelectProfilePictureScreenState
                   color: ColorConstant.whiteColor,
                 ),
               ),
-            ).paddingOnly(top: 31),
+            ).paddingOnly(top: 16),
             const Text(
               StringConstant.addPhotoSubText,
               textAlign: TextAlign.center,
@@ -90,29 +80,32 @@ class _SelectProfilePictureScreenState
                       shape: BoxShape.circle,
                       color: ColorConstant.lightGreyColor,
                     ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(100),
-                      child: imageFile != null
-                          ? AnimationWidget(
-                              animationType: "FADE",
-                              child: Image.file(
-                                imageFile!,
-                                height: 75,
-                                width: 60,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.high,
+                    child: Obx(() {
+                      return ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: circleManagementController.imageFile.value !=
+                                null
+                            ? AnimationWidget(
+                                animationType: "FADE",
+                                child: Image.file(
+                                  circleManagementController.imageFile.value!,
+                                  height: 75,
+                                  width: 60,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                ),
+                              )
+                            : Center(
+                                child: Image.asset(
+                                  IconConstant.noneUser,
+                                  height: 75,
+                                  width: 60,
+                                  fit: BoxFit.cover,
+                                  filterQuality: FilterQuality.high,
+                                ),
                               ),
-                            )
-                          : Center(
-                              child: Image.asset(
-                                IconConstant.noneUser,
-                                height: 75,
-                                width: 60,
-                                fit: BoxFit.cover,
-                                filterQuality: FilterQuality.high,
-                              ),
-                            ),
-                    ),
+                      );
+                    }),
                   ),
                 ),
                 Image.asset(
@@ -123,22 +116,30 @@ class _SelectProfilePictureScreenState
                 ).paddingOnly(top: 140)
               ],
             ),
-            AuthenticateButton(
-              image: IconConstant.choosePhoto,
-              textColor: ColorConstant.blackTextColor,
-              color: ColorConstant.whiteColor,
-              onPress: () => pickImage(),
-              name: StringConstant.addPhoto,
-            ).paddingOnly(top: 35, bottom: 38, left: 24, right: 24),
-            AuthenticateButton(
-              image: "",
-              textColor: ColorConstant.blackTextColor,
-              onPress: imageFile == null ? () {} : () {},
-              color: imageFile == null
-                  ? const Color(0xFFA7A9B7).withOpacity(0.3)
-                  : ColorConstant.whiteColor,
-              name: StringConstant.continueText,
-            ).paddingOnly(top: 90, bottom: 20, left: 24, right: 24),
+            Obx(() {
+              return AuthenticateButton(
+                image: IconConstant.choosePhoto,
+                textColor: ColorConstant.blackTextColor,
+                color: ColorConstant.whiteColor,
+                onPress: () => circleManagementController.pickImage(),
+                name: circleManagementController.imageFile.value == null
+                    ? StringConstant.addPhoto
+                    : StringConstant.changePhoto,
+              );
+            }).paddingOnly(top: 35, bottom: 38, left: 24, right: 24),
+            Obx(() {
+              return AuthenticateButton(
+                image: "",
+                textColor: ColorConstant.blackTextColor,
+                onPress: circleManagementController.imageFile.value == null
+                    ? () {}
+                    : () {},
+                color: circleManagementController.imageFile.value == null
+                    ? const Color(0xFFA7A9B7).withOpacity(0.3)
+                    : ColorConstant.whiteColor,
+                name: StringConstant.continueText,
+              );
+            }).paddingOnly(top: 90, bottom: 20, left: 24, right: 24),
             ElevatedButton(
               onPressed: () =>
                   Get.to(() => const NotificationPerRequestScreen()),

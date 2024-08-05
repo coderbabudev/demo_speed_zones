@@ -29,7 +29,7 @@ class _GetStartedScreenState extends State<GetStartedScreen> {
             fit: BoxFit.cover,
             height: 80,
             width: 205,
-          ).paddingOnly(top: 50),
+          ).paddingOnly(top: 36),
           const Text(
             StringConstant.letsGetStarted,
             style: TextStyle(

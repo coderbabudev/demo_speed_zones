@@ -27,6 +27,7 @@ class _JoinCircleSplashScreenState extends State<JoinCircleSplashScreen> {
             image: DecorationImage(
               image: AssetImage(ImageConstant.splashLayers),
               filterQuality: FilterQuality.high,
+              fit: BoxFit.cover,
             ),
           ),
           child: SafeArea(
@@ -39,7 +40,7 @@ class _JoinCircleSplashScreenState extends State<JoinCircleSplashScreen> {
                     fontWeight: FontWeight.w500,
                     color: ColorConstant.whiteColor,
                   ),
-                ).paddingOnly(top: 31),
+                ).paddingOnly(top: 16),
                 const Text(
                   StringConstant.nowJoinCircle,
                   style: TextStyle(

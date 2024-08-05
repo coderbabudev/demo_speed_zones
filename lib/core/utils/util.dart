@@ -1,11 +1,14 @@
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/features/auth/presentation/pages/login_register_screen.dart';
 import 'package:demo_speed_zones/features/profile/presentation/widget/logout_button_widget.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 
-showMessageSnackBar(String message) {
+showMessageSnackBar(String message,
+    {Color? bgColor, SnackPosition? snackPosition}) {
   Get.showSnackbar(
     GetSnackBar(
       messageText: Text(
@@ -16,9 +19,9 @@ showMessageSnackBar(String message) {
           color: ColorConstant.whiteColor,
         ),
       ),
-      snackPosition: SnackPosition.BOTTOM,
+      snackPosition: snackPosition ?? SnackPosition.BOTTOM,
       borderRadius: 8,
-      backgroundColor: ColorConstant.redColor,
+      backgroundColor: bgColor ?? ColorConstant.redColor,
       margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
       isDismissible: true,
       snackStyle: SnackStyle.FLOATING,
@@ -33,7 +36,7 @@ Widget backButton({IconData? icon, void Function()? onTap}) {
     child: Container(
       height: 40,
       width: 40,
-      margin: const EdgeInsets.only(top: 15, bottom: 32),
+      margin: const EdgeInsets.only(bottom: 32),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
@@ -87,7 +90,7 @@ logoutBottomSheet() {
             Container(
               height: 5,
               width: 134,
-              margin: EdgeInsets.only(top: 20),
+              margin: const EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(100),
                   color: ColorConstant.grey50),
@@ -133,7 +136,10 @@ logoutBottomSheet() {
                 const SizedBox(width: 7),
                 Expanded(
                   child: GestureDetector(
-                    onTap: () {},
+                    onTap: () async {
+                      await FirebaseAuth.instance.signOut();
+                      Get.offAll(() => const LoginAndRegisterScreen());
+                    },
                     child: const ButtonWidget(
                       title: StringConstant.continueText,
                       textColor: ColorConstant.whiteColor,

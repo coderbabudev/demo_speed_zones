@@ -1,5 +1,6 @@
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/add_change_photo_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -14,16 +15,7 @@ class DescribeRoleInCircleScreen extends StatefulWidget {
 
 class _DescribeRoleInCircleScreenState
     extends State<DescribeRoleInCircleScreen> {
-  int? selectedRole;
-  final List<String> roleList = [
-    'Mom',
-    'Dad',
-    'Son / Daughter / Child',
-    'Grandparent',
-    'Partner / Spouse',
-    'Friend',
-    'Other',
-  ];
+  final describeRole = Get.find<CircleManagementController>();
 
   @override
   Widget build(BuildContext context) {
@@ -41,48 +33,50 @@ class _DescribeRoleInCircleScreenState
                 fontSize: 24,
                 color: ColorConstant.whiteColor,
               ),
-            ).paddingOnly(left: 37, top: 31, right: 38, bottom: 50),
+            ).paddingOnly(left: 37, top: 20, right: 38, bottom: 50),
             ...List.generate(
-              roleList.length,
+              describeRole.roleList.length,
               (index) => GestureDetector(
                 onTap: () async {
-                  selectedRole = index;
+                  describeRole.selectedRole.value = index;
 
-                  await Future.delayed(const Duration(seconds: 1), () {
+                  await Future.delayed(const Duration(milliseconds: 300), () {
                     Get.to(() => const SelectProfilePictureScreen());
                   });
                 },
-                child: Container(
-                  height: 56,
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    color: selectedRole == index
-                        ? ColorConstant.whiteColor
-                        : ColorConstant.primaryColor,
-                    border: Border.all(
-                      width: selectedRole == index ? 2 : 1,
-                      style: BorderStyle.solid,
-                      color: selectedRole == index
-                          ? ColorConstant.blackColor
-                          : ColorConstant.whiteColor,
-                    ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      roleList[index],
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: selectedRole == index
-                            ? ColorConstant.blackTextColor
+                child: Obx(() {
+                  return Container(
+                    height: 56,
+                    margin: const EdgeInsets.symmetric(
+                        horizontal: 25, vertical: 16),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(30),
+                      color: describeRole.selectedRole.value == index
+                          ? ColorConstant.whiteColor
+                          : ColorConstant.primaryColor,
+                      border: Border.all(
+                        width: describeRole.selectedRole.value == index ? 2 : 1,
+                        style: BorderStyle.solid,
+                        color: describeRole.selectedRole.value == index
+                            ? ColorConstant.blackColor
                             : ColorConstant.whiteColor,
                       ),
                     ),
-                  ),
-                ),
+                    child: Center(
+                      child: Text(
+                        describeRole.roleList[index],
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w500,
+                          color: describeRole.selectedRole.value == index
+                              ? ColorConstant.blackTextColor
+                              : ColorConstant.whiteColor,
+                        ),
+                      ),
+                    ),
+                  );
+                }),
               ),
             ),
           ],

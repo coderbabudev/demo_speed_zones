@@ -64,6 +64,7 @@ class StringConstant {
   static const nowJoinCircleSubText =
       'A Circle is a private space only accessible by you and your family';
   static const addPhoto = 'Add your photo';
+  static const changePhoto = 'Change photo';
   static const addPhotoSubText =
       'This makes it easy for your family to find you on the map.';
   static const tipText =

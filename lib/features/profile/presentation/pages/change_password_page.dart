@@ -3,7 +3,7 @@ import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
 import 'package:demo_speed_zones/features/auth/presentation/widget/textField_widget.dart';
-import 'package:demo_speed_zones/features/profile/presentation/controller/change_password_controller.dart';
+import 'package:demo_speed_zones/features/profile/presentation/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -15,7 +15,7 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
-  final changePasswordController = Get.find<ChangePasswordController>();
+  final profileController = Get.find<ProfileController>();
 
   @override
   Widget build(BuildContext context) {
@@ -67,43 +67,38 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
             ),
           ).paddingOnly(top: 18),
           Obx(() => AuthTextField(
-                controller: changePasswordController.oldPasswordController,
+                controller: profileController.oldPasswordController,
                 hintText: StringConstant.oldPassword,
-                suffixIcon: changePasswordController.showOldPassword.value
+                suffixIcon: profileController.showOldPassword.value
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 prefixIcon: IconConstant.enablePassword,
-                suffixOnPress: () =>
-                    changePasswordController.showHideOldPassword(),
-                obscureText: changePasswordController.showOldPassword.value
-                    ? false
-                    : true,
+                suffixOnPress: () => profileController.showHideOldPassword(),
+                obscureText:
+                    profileController.showOldPassword.value ? false : true,
               ).paddingOnly(top: 39)),
           Obx(() => AuthTextField(
-                controller: changePasswordController.newPasswordController,
+                controller: profileController.newPasswordController,
                 hintText: StringConstant.newPassword,
-                suffixIcon: changePasswordController.showNewPassword.value
+                suffixIcon: profileController.showNewPassword.value
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 prefixIcon: IconConstant.enablePassword,
-                suffixOnPress: () =>
-                    changePasswordController.showHideNewPassword(),
-                obscureText: changePasswordController.showNewPassword.value
-                    ? false
-                    : true,
+                suffixOnPress: () => profileController.showHideNewPassword(),
+                obscureText:
+                    profileController.showNewPassword.value ? false : true,
               ).paddingOnly(top: 32)),
           Obx(() => AuthTextField(
-                controller: changePasswordController.confirmPasswordController,
+                controller: profileController.confirmPasswordController,
                 hintText: StringConstant.confirmPassword,
-                suffixIcon: changePasswordController.showConfirmPassword.value
+                suffixIcon: profileController.showConfirmPassword.value
                     ? Icons.visibility_off_outlined
                     : Icons.visibility_outlined,
                 prefixIcon: IconConstant.enablePassword,
                 suffixOnPress: () =>
-                    changePasswordController.showHideConfirmPassword(),
-                obscureText: changePasswordController.showConfirmPassword.value
-                    ? false
-                    : true,
+                    profileController.showHideConfirmPassword(),
+                obscureText:
+                    profileController.showConfirmPassword.value ? false : true,
               ).paddingOnly(top: 32)),
           const Spacer(),
           AuthenticateButton(

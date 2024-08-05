@@ -42,6 +42,7 @@ class _SplashScreenState extends State<SplashScreen> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               const SizedBox(),
+              const SizedBox(),
               Column(
                 children: [
                   Image.asset(

@@ -1,13 +1,11 @@
-import 'dart:io';
-
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
+import 'package:demo_speed_zones/features/profile/presentation/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl_phone_field/countries.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 
@@ -19,16 +17,7 @@ class EditProfileScreen extends StatefulWidget {
 }
 
 class _EditProfileScreenState extends State<EditProfileScreen> {
-  File? imageFile;
-
-  Future<void> pickImage() async {
-    final pickedFile =
-        await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      imageFile = File(pickedFile.path);
-    }
-    setState(() {});
-  }
+  final profileController = Get.find<ProfileController>();
 
   @override
   Widget build(BuildContext context) {
@@ -98,23 +87,25 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       style: BorderStyle.solid,
                     ),
                   ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(100),
-                    child: imageFile != null
-                        ? Image.file(
-                            imageFile!,
-                            filterQuality: FilterQuality.high,
-                            fit: BoxFit.cover,
-                          )
-                        : Image.network(
-                            "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
-                            filterQuality: FilterQuality.high,
-                            fit: BoxFit.cover,
-                          ),
-                  ),
+                  child: Obx(() {
+                    return ClipRRect(
+                      borderRadius: BorderRadius.circular(100),
+                      child: profileController.imageFile.value != null
+                          ? Image.file(
+                              profileController.imageFile.value!,
+                              filterQuality: FilterQuality.high,
+                              fit: BoxFit.cover,
+                            )
+                          : Image.network(
+                              "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500",
+                              filterQuality: FilterQuality.high,
+                              fit: BoxFit.cover,
+                            ),
+                    );
+                  }),
                 ),
                 GestureDetector(
-                  onTap: () => pickImage(),
+                  onTap: () => profileController.pickImage(),
                   child: Container(
                     height: 32,
                     width: 32,

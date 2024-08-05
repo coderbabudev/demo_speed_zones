@@ -6,6 +6,7 @@ import 'package:demo_speed_zones/core/presentation/widget/authentication_button.
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/describe_role_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 
 class ShareInviteCodeScreen extends StatefulWidget {
   const ShareInviteCodeScreen({super.key, required this.circleName});
@@ -58,8 +59,7 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
                 borderRadius: BorderRadius.circular(16),
                 color: ColorConstant.lightGreyColor,
               ),
-              padding: const EdgeInsets.only(
-                  top: 25, bottom: 61, left: 46, right: 45),
+              padding: const EdgeInsets.only(top: 25, bottom: 61, left: 46),
               child: Text(
                 inviteCode,
                 style: const TextStyle(
@@ -79,8 +79,11 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
                 color: ColorConstant.whiteColor,
               ),
             ).paddingOnly(top: 220, left: 37, right: 38),
-            const AuthenticateButton(
+            AuthenticateButton(
               image: "",
+              onPress: () {
+                Share.share(inviteCode);
+              },
               textColor: ColorConstant.blackTextColor,
               color: ColorConstant.whiteColor,
               name: StringConstant.shareCode,

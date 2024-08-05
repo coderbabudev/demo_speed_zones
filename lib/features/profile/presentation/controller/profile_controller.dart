@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/features/profile/presentation/model/language_model.dart';
 import 'package:demo_speed_zones/features/profile/presentation/model/setting_feature_model.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -11,7 +12,28 @@ class ProfileController extends GetxController {
   var otherFeature = [].obs;
   var languageList = [].obs;
   RxInt selectedLanguage = 0.obs;
-  File? imageFile;
+  var imageFile = Rxn<File>();
+  RxBool showNewPassword = false.obs;
+  RxBool showOldPassword = false.obs;
+  RxBool showConfirmPassword = false.obs;
+  final oldPasswordController = TextEditingController();
+  final newPasswordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  showHideOldPassword() {
+    showOldPassword.value = !showOldPassword.value;
+    update();
+  }
+
+  showHideNewPassword() {
+    showNewPassword.value = !showNewPassword.value;
+    update();
+  }
+
+  showHideConfirmPassword() {
+    showConfirmPassword.value = !showConfirmPassword.value;
+    update();
+  }
 
   @override
   void onInit() {
@@ -25,8 +47,9 @@ class ProfileController extends GetxController {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      imageFile = File(pickedFile.path);
+      imageFile.value = File(pickedFile.path);
     }
+    update();
   }
 
   generateMainFeature() {

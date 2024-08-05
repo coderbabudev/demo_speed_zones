@@ -2,8 +2,10 @@ import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
 import 'package:demo_speed_zones/core/utils/util.dart';
-import 'package:demo_speed_zones/features/auth/presentation/controller/register_controller.dart';
+import 'package:demo_speed_zones/features/auth/presentation/controller/auth_controller.dart';
+import 'package:demo_speed_zones/features/auth/presentation/model/user_model.dart';
 import 'package:demo_speed_zones/features/auth/presentation/pages/successfully_registered_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -15,8 +17,10 @@ class VerifyOTPScreen extends StatefulWidget {
     required this.isFrom,
     required this.mobileNumber,
     this.verificationId,
+    required this.userInfo,
   });
 
+  final UserDetails userInfo;
   final String isFrom;
   final String mobileNumber;
   final String? verificationId;
@@ -26,131 +30,141 @@ class VerifyOTPScreen extends StatefulWidget {
 }
 
 class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
-  RegisterController registerController = Get.put(RegisterController());
+  final authController = Get.find<AuthController>();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
-      body: GetBuilder<RegisterController>(builder: (otpValue) {
-        otpValue = registerController;
-        return SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              backButton(onTap: () => Get.back()),
-              if (widget.isFrom == 'PHONE')
-                const Text(
-                  StringConstant.verifyPhone,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            backButton(onTap: () => Get.back()),
+            if (widget.isFrom == 'PHONE')
+              const Text(
+                StringConstant.verifyPhone,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                  color: ColorConstant.blackColor,
+                ),
+              ).paddingOnly(top: 32),
+            if (widget.isFrom == 'CODE')
+              const Text(
+                StringConstant.verifyCode,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w500,
+                  color: ColorConstant.blackColor,
+                ),
+              ).paddingOnly(top: 32),
+            if (widget.isFrom == 'PHONE')
+              Text(
+                '${StringConstant.verifyPhoneSubText} ${widget.mobileNumber}',
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: ColorConstant.secondaryColor,
+                ),
+              ).paddingOnly(top: 17),
+            if (widget.isFrom == 'CODE')
+              const Text(
+                '${StringConstant.verifyCodeSubText}\n ${'abc@gmail.com'}',
+                style: TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.w400,
+                  color: ColorConstant.secondaryColor,
+                ),
+              ).paddingOnly(top: 17),
+            Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Pinput(
+                    controller: authController.regOtpController,
+                    keyboardType: TextInputType.number,
+                    length: 6,
+                    focusNode: FocusNode(canRequestFocus: false),
+                    defaultPinTheme: buildPinTheme(),
+                    focusedPinTheme: buildPinTheme(),
+                    inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                    keyboardAppearance: Brightness.dark,
+                    textInputAction: TextInputAction.done,
+                    closeKeyboardWhenCompleted: true,
+                    pinAnimationType: PinAnimationType.fade,
+                    isCursorAnimationEnabled: false,
+                    followingPinTheme: buildPinTheme(),
+                  )
+                ],
+              ),
+            ).paddingOnly(top: 20),
+            Center(
+              child: RichText(
+                text: const TextSpan(
+                  text: StringConstant.dontGetCode,
                   style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                    color: ColorConstant.blackColor,
-                  ),
-                ).paddingOnly(top: 32),
-              if (widget.isFrom == 'CODE')
-                const Text(
-                  StringConstant.verifyCode,
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w500,
-                    color: ColorConstant.blackColor,
-                  ),
-                ).paddingOnly(top: 32),
-              if (widget.isFrom == 'PHONE')
-                Text(
-                  '${StringConstant.verifyPhoneSubText} ${widget.mobileNumber}',
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w400,
                     color: ColorConstant.secondaryColor,
-                  ),
-                ).paddingOnly(top: 17),
-              if (widget.isFrom == 'CODE')
-                const Text(
-                  '${StringConstant.verifyCodeSubText}\n ${'abc@gmail.com'}',
-                  style: TextStyle(
-                    fontSize: 14,
                     fontWeight: FontWeight.w400,
-                    color: ColorConstant.secondaryColor,
+                    fontSize: 16,
                   ),
-                ).paddingOnly(top: 17),
-              Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    Pinput(
-                      controller: otpValue.otpController,
-                      keyboardType: TextInputType.number,
-                      length: 4,
-                      focusNode: FocusNode(canRequestFocus: false),
-                      defaultPinTheme: buildPinTheme(),
-                      focusedPinTheme: buildPinTheme(),
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      keyboardAppearance: Brightness.dark,
-                      textInputAction: TextInputAction.next,
-                      closeKeyboardWhenCompleted: true,
-                      pinAnimationType: PinAnimationType.fade,
-                      isCursorAnimationEnabled: false,
-                      followingPinTheme: buildPinTheme(),
-                    )
+                    TextSpan(
+                      text: StringConstant.resend,
+                      style: TextStyle(
+                        color: ColorConstant.primaryColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
                   ],
                 ),
-              ).paddingOnly(top: 20),
-              Center(
-                child: RichText(
-                  text: const TextSpan(
-                    text: StringConstant.dontGetCode,
-                    style: TextStyle(
-                      color: ColorConstant.secondaryColor,
-                      fontWeight: FontWeight.w400,
-                      fontSize: 16,
-                    ),
-                    children: [
-                      TextSpan(
-                        text: StringConstant.resend,
-                        style: TextStyle(
-                          color: ColorConstant.primaryColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ).paddingOnly(top: 48),
-              const Spacer(),
-              AuthenticateButton(
+              ),
+            ).paddingOnly(top: 48),
+            const Spacer(),
+            Obx(() {
+              return AuthenticateButton(
                 name: StringConstant.verifyNow,
-                isLoader: otpValue.isLoading.value,
+                isLoader: authController.isLoading.value,
                 onPress: widget.isFrom == "PHONE"
                     ? () async {
-                        // otpValue.setLoading(true);
-                        // String smsCode = otpValue.otpController.text.trim();
-                        // PhoneAuthCredential credential =
-                        //     PhoneAuthProvider.credential(
-                        //   verificationId: widget.verificationId.toString(),
-                        //   smsCode: smsCode,
-                        // );
-                        // try {
-                        //   await FirebaseAuth.instance
-                        //       .signInWithCredential(credential);
-                        //   otpValue.setLoading(false);
-                        // } catch (e) {
-                        //   otpValue.setLoading(false);
-                        //   showMessageSnackBar('Invalid OTP. Try again.');
-                        // }
-                        Get.offAll(() => const SuccessFullyRegisteredScreen());
+                        try {
+                          authController.setLoading(true);
+                          PhoneAuthCredential credential =
+                              PhoneAuthProvider.credential(
+                            verificationId: widget.verificationId ?? '',
+                            smsCode:
+                                authController.regOtpController.text.toString(),
+                          );
+                          await authController.auth
+                              .signInWithCredential(credential)
+                              .then((value) async {
+                            await authController.auth
+                                .createUserWithEmailAndPassword(
+                              email:
+                                  authController.regEmailController.text.trim(),
+                              password: authController
+                                  .regPasswordController.text
+                                  .trim(),
+                            );
+                            authController.db.createUser(widget.userInfo);
+                            Get.offAll(
+                                () => const SuccessFullyRegisteredScreen());
+                          });
+                          authController.setLoading(false);
+                        } catch (e) {
+                          print(e.toString());
+                        }
                       }
                     : () {},
                 image: '',
                 color: ColorConstant.primaryColor,
                 textColor: ColorConstant.whiteColor,
-              ),
-            ],
-          ).paddingAll(20),
-        );
-      }),
+              );
+            }),
+          ],
+        ).paddingAll(20),
+      ),
     );
   }
 }
