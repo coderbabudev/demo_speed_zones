@@ -2,16 +2,16 @@ import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:flutter/material.dart';
 
 class AuthenticateButton extends StatelessWidget {
-  const AuthenticateButton({
-    super.key,
-    this.color,
-    this.textColor,
-    this.name,
-    this.image,
-    this.onPress,
-    this.isShadow = false,
-    this.isLoader = false,
-  });
+  const AuthenticateButton(
+      {super.key,
+      this.color,
+      this.textColor,
+      this.name,
+      this.image,
+      this.onPress,
+      this.isShadow = false,
+      this.isLoader = false,
+      this.isLoaderColor});
 
   final Color? color;
   final Color? textColor;
@@ -20,6 +20,7 @@ class AuthenticateButton extends StatelessWidget {
   final bool isShadow;
   final void Function()? onPress;
   final bool isLoader;
+  final Color? isLoaderColor;
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +55,9 @@ class AuthenticateButton extends StatelessWidget {
                 ),
               const SizedBox(width: 8),
               isLoader
-                  ? const CircularProgressIndicator(
-                      color: ColorConstant.whiteColor)
+                  ? CircularProgressIndicator(
+                      color: isLoaderColor ?? ColorConstant.whiteColor,
+                    )
                   : Text(
                       name ?? '',
                       style: TextStyle(

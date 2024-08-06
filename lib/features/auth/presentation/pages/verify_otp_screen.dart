@@ -4,8 +4,6 @@ import 'package:demo_speed_zones/core/presentation/widget/authentication_button.
 import 'package:demo_speed_zones/core/utils/util.dart';
 import 'package:demo_speed_zones/features/auth/presentation/controller/auth_controller.dart';
 import 'package:demo_speed_zones/features/auth/presentation/model/user_model.dart';
-import 'package:demo_speed_zones/features/auth/presentation/pages/successfully_registered_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -127,35 +125,10 @@ class _VerifyOTPScreenState extends State<VerifyOTPScreen> {
                 name: StringConstant.verifyNow,
                 isLoader: authController.isLoading.value,
                 onPress: widget.isFrom == "PHONE"
-                    ? () async {
-                        try {
-                          authController.setLoading(true);
-                          PhoneAuthCredential credential =
-                              PhoneAuthProvider.credential(
-                            verificationId: widget.verificationId ?? '',
-                            smsCode:
-                                authController.regOtpController.text.toString(),
-                          );
-                          await authController.auth
-                              .signInWithCredential(credential)
-                              .then((value) async {
-                            await authController.auth
-                                .createUserWithEmailAndPassword(
-                              email:
-                                  authController.regEmailController.text.trim(),
-                              password: authController
-                                  .regPasswordController.text
-                                  .trim(),
-                            );
-                            authController.db.createUser(widget.userInfo);
-                            Get.offAll(
-                                () => const SuccessFullyRegisteredScreen());
-                          });
-                          authController.setLoading(false);
-                        } catch (e) {
-                          print(e.toString());
-                        }
-                      }
+                    ? () => authController.verifyOTP(
+                          widget.verificationId ?? '',
+                          widget.userInfo,
+                        )
                     : () {},
                 image: '',
                 color: ColorConstant.primaryColor,

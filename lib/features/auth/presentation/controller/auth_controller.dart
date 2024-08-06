@@ -1,5 +1,7 @@
+import 'package:demo_speed_zones/core/services/shared_prefrences_services.dart';
 import 'package:demo_speed_zones/core/utils/util.dart';
 import 'package:demo_speed_zones/features/auth/presentation/model/user_model.dart';
+import 'package:demo_speed_zones/features/auth/presentation/pages/successfully_registered_screen.dart';
 import 'package:demo_speed_zones/features/auth/presentation/pages/verify_otp_screen.dart';
 import 'package:demo_speed_zones/features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,29 +22,48 @@ class AuthController extends GetxController {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final forgetEmailController = TextEditingController();
+  UserDetails userDetails = const UserDetails();
 
   RxBool lgnShowPassword = false.obs;
   RxBool regShowPassword = false.obs;
   RxBool showNewPassword = false.obs;
   RxBool showConfirmPassword = false.obs;
 
-  RxBool isCheckLgn = false.obs;
-  RxBool isRemember = false.obs;
+  RxBool isLoggedIn = false.obs;
+  RxBool isRememberLgn = false.obs;
+  RxBool isRememberReg = false.obs;
 
   RxBool isMobileRegister = false.obs;
   RxBool isLoading = false.obs;
   RxString verificationId = ''.obs;
   RxString countryCode = '91'.obs;
+  RxBool isPhoneVerified = false.obs;
   final db = DatabaseMethod();
   FirebaseAuth auth = FirebaseAuth.instance;
 
   void lgnRememberMeCheck(bool value) {
-    isCheckLgn.value = value;
+    isRememberLgn.value = value;
+    update();
+  }
+
+  Future<void> loadUserCredentials() async {
+    lgnEmailController.text =
+        SharedPrefs().getString(SharedPrefs.lgnEmailKey) ?? '';
+    lgnPasswordController.text =
+        SharedPrefs().getString(SharedPrefs.lgnPasswordKey) ?? '';
+    regNameController.text =
+        SharedPrefs().getString(SharedPrefs.regNameKey) ?? '';
+    regEmailController.text =
+        SharedPrefs().getString(SharedPrefs.regEmailKey) ?? '';
+    regPasswordController.text =
+        SharedPrefs().getString(SharedPrefs.regPasswordKey) ?? '';
+    isRememberLgn.value = lgnEmailController.text.isNotEmpty;
+    isRememberReg.value = regEmailController.text.isNotEmpty;
     update();
   }
 
   void regRememberMeCheck(bool value) {
-    isRemember.value = value;
+    isRememberReg.value = value;
     update();
   }
 
@@ -86,6 +107,15 @@ class AuthController extends GetxController {
           password: lgnPasswordController.text.trim(),
         );
         if (credential.user != null) {
+          if (isRememberLgn.value) {
+            await SharedPrefs().saveString(
+                SharedPrefs.lgnEmailKey, lgnEmailController.text.trim());
+            await SharedPrefs().saveString(
+                SharedPrefs.lgnPasswordKey, lgnPasswordController.text.trim());
+          } else {
+            await SharedPrefs().clear(SharedPrefs.lgnEmailKey);
+            await SharedPrefs().clear(SharedPrefs.lgnPasswordKey);
+          }
           Get.offAll(() => const DashboardScreen());
           showMessageSnackBar(
             'Login Successfully.',
@@ -155,16 +185,19 @@ class AuthController extends GetxController {
       name: regNameController.text.trim(),
       email: regEmailController.text.trim(),
       phone: regMobileNumberController.text.toString(),
+      countryCode: '+$countryCode',
       createdAt: formattedDate,
     );
-    setLoading(true);
     if (regMobileNumberController.text.isNotEmpty &&
         regMobileNumberController.text.length == 10 &&
         isMobileRegister.value) {
+      setLoading(true);
       await auth.verifyPhoneNumber(
         phoneNumber: '+$countryCode ${regMobileNumberController.text.trim()}',
         verificationCompleted: (PhoneAuthCredential credential) async {},
-        verificationFailed: (FirebaseAuthException e) {},
+        verificationFailed: (FirebaseAuthException e) {
+          showMessageSnackBar('$e');
+        },
         codeSent: (String verificationId, int? resendToken) {
           Get.to(
             () => VerifyOTPScreen(
@@ -190,6 +223,78 @@ class AuthController extends GetxController {
     update();
   }
 
+  Future<void> verifyOTP(String verificationId, UserDetails userInfo) async {
+    if (regOtpController.text.isNotEmpty && regOtpController.text.length == 6) {
+      setLoading(true);
+      try {
+        PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
+          verificationId: verificationId,
+          smsCode: regOtpController.text.toString(),
+        );
+        UserCredential phoneUserCredential =
+            await auth.signInWithCredential(phoneCredential);
+
+        AuthCredential emailCredential = EmailAuthProvider.credential(
+          email: regEmailController.text.trim(),
+          password: regPasswordController.text.trim(),
+        );
+
+        await phoneUserCredential.user!.linkWithCredential(emailCredential);
+        UserDetails updatedUserInfo = UserDetails(
+          userId: userInfo.userId,
+          name: userInfo.name,
+          email: userInfo.email,
+          phone: userInfo.phone,
+          isPhoneVerified: true,
+          photoUrl: userInfo.photoUrl,
+          location: userInfo.location,
+          createdAt: userInfo.createdAt,
+          updatedAt: userInfo.updatedAt,
+          countryCode: userInfo.countryCode,
+          isEnable: userInfo.isEnable,
+          isDeleted: userInfo.isDeleted,
+        );
+        if (isRememberReg.value) {
+          await SharedPrefs().saveString(
+              SharedPrefs.regNameKey, regNameController.text.trim());
+          await SharedPrefs().saveString(
+              SharedPrefs.regEmailKey, regEmailController.text.trim());
+          await SharedPrefs().saveString(
+              SharedPrefs.regPasswordKey, regPasswordController.text.trim());
+        } else {
+          await SharedPrefs().clear(SharedPrefs.regNameKey);
+          await SharedPrefs().clear(SharedPrefs.regEmailKey);
+          await SharedPrefs().clear(SharedPrefs.regPasswordKey);
+        }
+        db.createUser(updatedUserInfo);
+        Get.offAll(() => SuccessFullyRegisteredScreen(userInfo: userInfo));
+        regOtpController.clear();
+      } on FirebaseAuthException catch (e) {
+        showMessageSnackBar(e.code);
+        // showMessageSnackBar('Failed to verify OTP. Please try again.');
+      }
+      setLoading(false);
+    } else {
+      setLoading(false);
+      if (regOtpController.text.isEmpty) {
+        showMessageSnackBar('OTP field is required.');
+      } else if (regOtpController.text.length != 6) {
+        showMessageSnackBar('Invalid OTP.');
+      }
+    }
+    update();
+  }
+
+  @override
+  void onInit() {
+    super.onInit();
+    auth.authStateChanges().listen((User? user) {
+      isLoggedIn.value = user != null;
+    });
+    loadUserCredentials();
+    db.fetchUserdata(userDetails.name.toString());
+  }
+
   @override
   void onClose() {
     regEmailController.dispose();
@@ -201,11 +306,15 @@ class AuthController extends GetxController {
   }
 
   clearTextField() {
-    lgnEmailController.clear();
-    lgnPasswordController.clear();
-    regEmailController.clear();
-    regNameController.clear();
-    regPasswordController.clear();
+    if (!isRememberLgn.value) {
+      lgnEmailController.clear();
+      lgnPasswordController.clear();
+    }
+    if (!isRememberReg.value) {
+      regEmailController.clear();
+      regNameController.clear();
+      regPasswordController.clear();
+    }
     regMobileNumberController.clear();
     countryCode.value = '';
     isMobileRegister.value = false;

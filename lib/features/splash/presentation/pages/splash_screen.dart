@@ -2,6 +2,8 @@ import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
+import 'package:demo_speed_zones/features/auth/presentation/controller/auth_controller.dart';
+import 'package:demo_speed_zones/features/dashboard/presentation/pages/dashboard_screen.dart';
 import 'package:demo_speed_zones/features/get_started/presentation/pages/get_started_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Future.delayed(const Duration(seconds: 3), () {
-      Get.offAll(() => const GetStartedScreen());
+      Get.offAll(() => const AuthWrapper());
     });
   }
 
@@ -86,5 +88,24 @@ class _SplashScreenState extends State<SplashScreen> {
         ),
       ),
     );
+  }
+}
+
+class AuthWrapper extends StatefulWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  State<AuthWrapper> createState() => _AuthWrapperState();
+}
+
+class _AuthWrapperState extends State<AuthWrapper> {
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() {
+      final authController = Get.find<AuthController>();
+      return authController.isLoggedIn.value
+          ? const DashboardScreen()
+          : const GetStartedScreen();
+    });
   }
 }

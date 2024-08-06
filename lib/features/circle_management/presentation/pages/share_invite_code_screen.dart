@@ -1,8 +1,7 @@
-import 'dart:math';
-
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
+import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/describe_role_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -18,18 +17,7 @@ class ShareInviteCodeScreen extends StatefulWidget {
 }
 
 class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
-  String inviteCode = '';
-
-  @override
-  void initState() {
-    super.initState();
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    final random = Random();
-
-    inviteCode = String.fromCharCodes(
-      Iterable.generate(6, (_) => characters.codeUnitAt(random.nextInt(26))),
-    );
-  }
+  final circleController = Get.find<CircleManagementController>();
 
   @override
   Widget build(BuildContext context) {
@@ -61,12 +49,12 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
               ),
               padding: const EdgeInsets.only(top: 25, bottom: 61, left: 46),
               child: Text(
-                inviteCode,
+                circleController.inviteCode.value,
                 style: const TextStyle(
                   fontSize: 40,
                   fontWeight: FontWeight.w700,
                   color: ColorConstant.blackTextColor,
-                  letterSpacing: 15,
+                  letterSpacing: 20,
                 ),
               ),
             ),
@@ -82,14 +70,22 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
             AuthenticateButton(
               image: "",
               onPress: () {
-                Share.share(inviteCode);
+                Share.share(circleController.inviteCode.value);
               },
               textColor: ColorConstant.blackTextColor,
               color: ColorConstant.whiteColor,
               name: StringConstant.shareCode,
             ).paddingOnly(top: 50, bottom: 20, left: 24, right: 24),
             ElevatedButton(
-              onPressed: () => Get.to(() => const DescribeRoleInCircleScreen()),
+              onPressed: () async {
+                circleController.isLoading.value = true;
+                await circleController
+                    .createCircleGroup(widget.circleName)
+                    .then((value) {
+                  circleController.isLoading.value = false;
+                });
+                Get.to(() => const DescribeRoleInCircleScreen());
+              },
               style: ElevatedButton.styleFrom(
                   fixedSize: const Size(double.infinity, 56),
                   maximumSize: const Size(double.infinity, 56),
@@ -106,14 +102,16 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
                       )),
                   backgroundColor: Colors.transparent,
                   shadowColor: const Color(0xFFA7A9B7).withOpacity(0.3)),
-              child: const Text(
-                StringConstant.codeShareDone,
-                style: TextStyle(
-                  color: ColorConstant.whiteColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16,
-                ),
-              ),
+              child: circleController.isLoading.value
+                  ? const CircularProgressIndicator()
+                  : const Text(
+                      StringConstant.codeShareDone,
+                      style: TextStyle(
+                        color: ColorConstant.whiteColor,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 16,
+                      ),
+                    ),
             ).paddingOnly(left: 24, right: 24, bottom: 38),
           ],
         ),

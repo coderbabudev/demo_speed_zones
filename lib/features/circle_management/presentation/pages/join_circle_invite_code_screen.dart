@@ -3,6 +3,7 @@ import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
 import 'package:demo_speed_zones/core/utils/util.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
+import 'package:demo_speed_zones/features/circle_management/presentation/pages/describe_role_screen.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/give_circle_name_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -24,15 +25,14 @@ class _JoinCircleInviteCodeScreenState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SizedBox(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        child: SafeArea(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              SizedBox(
-                height: MediaQuery.of(context).size.height / 1.5,
+      resizeToAvoidBottomInset: false,
+      body: SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
                 child: Column(
                   children: [
                     Center(
@@ -47,20 +47,24 @@ class _JoinCircleInviteCodeScreenState
                       ).paddingOnly(top: 16),
                     ),
                     Pinput(
-                      keyboardType: TextInputType.number,
+                      keyboardType: TextInputType.text,
                       length: 6,
                       controller: inviteController.inviteCodeController,
                       focusNode: FocusNode(canRequestFocus: false),
                       defaultPinTheme: buildPinTheme(),
                       focusedPinTheme: buildPinTheme(),
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                      useNativeKeyboard: true,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.allow(RegExp(r'[A-Z]')),
+                      ],
+                      textCapitalization: TextCapitalization.characters,
                       keyboardAppearance: Brightness.dark,
                       textInputAction: TextInputAction.done,
                       closeKeyboardWhenCompleted: true,
                       pinAnimationType: PinAnimationType.fade,
                       isCursorAnimationEnabled: false,
                       followingPinTheme: buildPinTheme(),
-                    ).paddingOnly(top: 50, left: 47, right: 48),
+                    ).paddingOnly(top: 50, left: 47, right: 47),
                     Center(
                       child: const Text(
                         StringConstant.joiningACircleSubText,
@@ -75,13 +79,23 @@ class _JoinCircleInviteCodeScreenState
                     ),
                     Obx(() {
                       return ElevatedButton(
-                        onPressed: () {},
+                        onPressed: inviteController.isAllFieldsFilled.value
+                            ? () {
+                                Get.to(
+                                    () => const DescribeRoleInCircleScreen());
+                              }
+                            : () {
+                                showMessageSnackBar('Enter your invite code.');
+                              },
                         style: ElevatedButton.styleFrom(
                           fixedSize: const Size(double.infinity, 56),
                           maximumSize: const Size(double.infinity, 56),
                           minimumSize: const Size(double.infinity, 56),
                           visualDensity: VisualDensity.comfortable,
                           elevation: 0,
+                          splashFactory: NoSplash.splashFactory,
+                          surfaceTintColor: Colors.transparent,
+                          shadowColor: Colors.transparent,
                           tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
@@ -104,66 +118,71 @@ class _JoinCircleInviteCodeScreenState
                   ],
                 ),
               ),
-              Stack(
-                alignment: Alignment.center,
-                children: [
-                  Container(
-                    height: 2,
-                    width: double.infinity,
-                    color: ColorConstant.whiteColor,
-                  ),
-                  Container(
-                    height: 40,
-                    width: 40,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.primaryColor,
-                      border: Border.all(
-                        color: ColorConstant.whiteColor,
-                        width: 2,
-                        style: BorderStyle.solid,
-                      ),
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Container(
+                      height: 2,
+                      width: double.infinity,
+                      color: ColorConstant.whiteColor,
                     ),
-                    child: const Center(
-                      child: Text(
-                        StringConstant.or,
-                        style: TextStyle(
+                    Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: ColorConstant.primaryColor,
+                        border: Border.all(
                           color: ColorConstant.whiteColor,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
+                          width: 2,
+                          style: BorderStyle.solid,
                         ),
                       ),
-                    ),
-                  )
-                ],
-              ),
-              const Text(
-                StringConstant.dontCode,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w500,
-                  color: ColorConstant.whiteColor,
+                      child: const Center(
+                        child: Text(
+                          StringConstant.or,
+                          style: TextStyle(
+                            color: ColorConstant.whiteColor,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
                 ),
-              ).paddingOnly(top: 18),
-              const Text(
-                StringConstant.dontCodeSubText,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.w500,
+                const Text(
+                  StringConstant.dontCode,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w500,
+                    color: ColorConstant.whiteColor,
+                  ),
+                ).paddingOnly(top: 18),
+                const Text(
+                  StringConstant.dontCodeSubText,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                    color: ColorConstant.whiteColor,
+                  ),
+                ).paddingOnly(top: 5),
+                AuthenticateButton(
+                  image: "",
+                  onPress: () => Get.to(() => const GiveCircleNameScreen()),
+                  textColor: ColorConstant.blackTextColor,
                   color: ColorConstant.whiteColor,
-                ),
-              ).paddingOnly(top: 5),
-              AuthenticateButton(
-                image: "",
-                onPress: () => Get.to(() => const GiveCircleNameScreen()),
-                textColor: ColorConstant.blackTextColor,
-                color: ColorConstant.whiteColor,
-                name: StringConstant.createANewCircle,
-              ).paddingOnly(top: 35, bottom: 20, left: 24, right: 24),
-            ],
-          ),
+                  name: StringConstant.createANewCircle,
+                ).paddingOnly(top: 35, bottom: 20, left: 24, right: 24),
+              ],
+            ),
+          ],
         ),
       ),
     );

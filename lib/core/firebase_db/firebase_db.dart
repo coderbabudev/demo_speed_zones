@@ -1,14 +1,67 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_speed_zones/features/auth/presentation/model/user_model.dart';
+import 'package:demo_speed_zones/features/circle_management/presentation/model/circle_manage_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class DatabaseMethod {
-  User? user;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future createUser(UserDetails userInfo) {
-    return FirebaseFirestore.instance
-        .collection("Users")
+  Future<void> createUser(UserDetails userInfo) async {
+    User? user = _auth.currentUser;
+    if (user != null) {
+      UserDetails userWithId = UserDetails(
+        userId: user.uid,
+        name: userInfo.name,
+        email: userInfo.email,
+        phone: userInfo.phone,
+        photoUrl: userInfo.photoUrl,
+        location: userInfo.location,
+        createdAt: userInfo.createdAt,
+        updatedAt: userInfo.updatedAt,
+        countryCode: userInfo.countryCode,
+        isPhoneVerified: userInfo.isPhoneVerified,
+        isEnable: userInfo.isEnable,
+        isDeleted: userInfo.isDeleted,
+      );
+
+      await _firestore
+          .collection("users")
+          .doc(user.uid)
+          .set(userWithId.toJson());
+    } else {
+      throw Exception("User not logged in");
+    }
+  }
+
+  Future<void> createCircle(Circle circleData) async {
+    User? user = _auth.currentUser;
+
+    if (user != null) {
+      Circle circle = Circle(
+        circleAdminUid: user.uid,
+        circleName: circleData.circleName,
+        circleInviteCode: circleData.circleInviteCode,
+        circleMembers: circleData.circleMembers,
+        isEnabled: circleData.isEnabled,
+        isDeleted: circleData.isDeleted,
+        createdAt: circleData.createdAt,
+        updatedAt: circleData.updatedAt,
+      );
+      await _firestore.collection('circles').doc().set(circle.toJson());
+    } else {
+      throw Exception("Circle Not created.");
+    }
+  }
+
+  Future<void> fetchUserdata(String userName) async {
+    User? user = _auth.currentUser;
+    FirebaseFirestore.instance
+        .collection('users')
         .doc(user?.uid)
-        .set(userInfo.toJson());
+        .get()
+        .then((value) {
+      userName = value.data()?['name'].toString() ?? '';
+    });
   }
 }

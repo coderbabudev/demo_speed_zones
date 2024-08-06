@@ -1,45 +1,61 @@
 class UserDetails {
+  final String? userId;
   final String? name;
   final String? email;
   final String? phone;
+  final String? countryCode;
   final String? photoUrl;
-  final String? dob;
-  final String? address;
-  final bool? isBlock;
+  final String? location;
   final String? createdAt;
+  final String? updatedAt;
+  final bool isPhoneVerified;
+  final bool isEnable;
+  final bool isDeleted;
 
   const UserDetails({
+    this.userId,
     this.name,
     this.email,
     this.phone,
+    this.countryCode,
     this.photoUrl,
-    this.dob,
-    this.address,
-    this.isBlock,
+    this.location,
     this.createdAt,
+    this.updatedAt,
+    this.isPhoneVerified = false,
+    this.isEnable = false,
+    this.isDeleted = false,
   });
 
   factory UserDetails.fromJson(Map<String, dynamic> json) {
     return UserDetails(
+      userId: json['user_id'],
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
-      photoUrl: json['imageUrl'] ?? "",
-      dob: json['date_of_birth'] ?? '',
-      address: json['address'] ?? '',
-      isBlock: json['isBlock'] ?? false,
-      createdAt: json['createdAt'] ?? '',
+      countryCode: json['country_code'] ?? '',
+      photoUrl: json['image_url'] ?? "",
+      location: json['location'] ?? '',
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      isPhoneVerified: json['is_phone_verified'] ?? false,
+      isEnable: json['is_enable'] ?? false,
+      isDeleted: json['is_deleted'] ?? false,
     );
   }
 
   Map<String, dynamic> toJson() => {
+        'user_id': userId,
         'name': name,
         'email': email,
         'phone': phone,
-        'imageUrl': photoUrl,
-        'date_of_birth': dob,
-        'address': address,
-        'isBlock': isBlock,
-        'createdAt': createdAt,
+        'country_code': countryCode,
+        'image_url': photoUrl,
+        'location': location,
+        'created_at': createdAt,
+        'updated_at': updatedAt,
+        'is_phone_verified': isPhoneVerified,
+        'is_enable': isEnable,
+        'is_deleted': isDeleted,
       };
 }

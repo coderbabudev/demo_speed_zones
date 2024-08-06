@@ -8,7 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class JoinCircleSplashScreen extends StatefulWidget {
-  const JoinCircleSplashScreen({super.key});
+  const JoinCircleSplashScreen({
+    super.key,
+    required this.userName,
+  });
+
+  final String userName;
 
   @override
   State<JoinCircleSplashScreen> createState() => _JoinCircleSplashScreenState();
@@ -33,9 +38,9 @@ class _JoinCircleSplashScreenState extends State<JoinCircleSplashScreen> {
           child: SafeArea(
             child: Column(
               children: [
-                const Text(
-                  "Hi Daniel Lawson! 👋",
-                  style: TextStyle(
+                Text(
+                  "Hi ${widget.userName}! 👋",
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.w500,
                     color: ColorConstant.whiteColor,

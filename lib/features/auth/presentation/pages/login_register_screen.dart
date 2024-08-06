@@ -57,7 +57,7 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
             Get.back();
           }
         }
-        return false;
+        return true;
       },
       child: Scaffold(
         backgroundColor: ColorConstant.whiteColor,
@@ -80,7 +80,7 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
                 child: Container(
                   height: 55,
                   width: double.infinity,
-                  margin: EdgeInsets.symmetric(horizontal: 20),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
                   decoration: BoxDecoration(
                     color: ColorConstant.lightGreyColor,
                     borderRadius: BorderRadius.circular(50.0),
@@ -157,7 +157,7 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
                                 children: [
                                   Obx(() {
                                     return Checkbox(
-                                      value: authController.isCheckLgn.value,
+                                      value: authController.isRememberLgn.value,
                                       onChanged: (value) => authController
                                           .lgnRememberMeCheck(value!),
                                       visualDensity: VisualDensity.comfortable,
@@ -276,8 +276,8 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
                                       children: [
                                         Obx(() {
                                           return Checkbox(
-                                            value:
-                                                authController.isRemember.value,
+                                            value: authController
+                                                .isRememberReg.value,
                                             onChanged: (value) => authController
                                                 .regRememberMeCheck(value!),
                                             visualDensity:
@@ -323,7 +323,6 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
                                     ),
                                   ],
                                 ).paddingOnly(left: 20, right: 20),
-                                const Spacer(),
                                 AuthenticateButton(
                                   name: StringConstant.register,
                                   isLoader: authController.isLoading.value,

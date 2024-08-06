@@ -1,6 +1,7 @@
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/features/dashboard/presentation/controller/dashboard_controller.dart';
+import 'package:demo_speed_zones/features/dashboard/presentation/widget/bottm_nav_bar_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -39,53 +40,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: GestureDetector(
                 onTap: () => dashboardController.pageIndex.value = 0,
                 child: Obx(
-                  () => Container(
-                    decoration: BoxDecoration(
-                      border: dashboardController.pageIndex.value == 0
-                          ? const Border(
-                              bottom: BorderSide(
-                                width: 3,
-                                color: ColorConstant.primaryColor,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          : null,
-                      gradient: dashboardController.pageIndex.value == 0
-                          ? LinearGradient(
-                              colors: [
-                                ColorConstant.primaryColor.withOpacity(0.5),
-                                ColorConstant.whiteColor.withOpacity(0),
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.center,
-                            )
-                          : null,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          IconConstant.home,
-                          height: 20,
-                          width: 20,
-                          filterQuality: FilterQuality.high,
-                          color: dashboardController.pageIndex.value == 0
-                              ? ColorConstant.primaryColor
-                              : ColorConstant.grey50,
-                        ),
-                        Text(
-                          "Home",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: dashboardController.pageIndex.value == 0
-                                ? ColorConstant.primaryColor
-                                : ColorConstant.grey50,
-                          ),
-                        )
-                      ],
-                    ),
+                  () => BottomNavBarWidget(
+                    border: dashboardController.pageIndex.value == 0
+                        ? const Border(
+                            bottom: BorderSide(
+                              width: 3,
+                              color: ColorConstant.primaryColor,
+                              style: BorderStyle.solid,
+                            ),
+                          )
+                        : null,
+                    gradient: dashboardController.pageIndex.value == 0
+                        ? LinearGradient(
+                            colors: [
+                              ColorConstant.primaryColor.withOpacity(0.5),
+                              ColorConstant.whiteColor.withOpacity(0),
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.center,
+                          )
+                        : null,
+                    icon: IconConstant.home,
+                    title: "Home",
+                    iconColor: dashboardController.pageIndex.value == 0
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
+                    textColor: dashboardController.pageIndex.value == 0
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
                   ),
                 ),
               ),
@@ -94,53 +76,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: GestureDetector(
                 onTap: () => dashboardController.pageIndex.value = 1,
                 child: Obx(
-                  () => Container(
-                    decoration: BoxDecoration(
-                      border: dashboardController.pageIndex.value == 1
-                          ? const Border(
-                              bottom: BorderSide(
-                                width: 3,
-                                color: ColorConstant.primaryColor,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          : null,
-                      gradient: dashboardController.pageIndex.value == 1
-                          ? LinearGradient(
-                              colors: [
-                                ColorConstant.primaryColor.withOpacity(0.5),
-                                ColorConstant.whiteColor.withOpacity(0),
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.center,
-                            )
-                          : null,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          IconConstant.circles,
-                          height: 20,
-                          width: 20,
-                          filterQuality: FilterQuality.high,
-                          color: dashboardController.pageIndex.value == 1
-                              ? ColorConstant.primaryColor
-                              : ColorConstant.grey50,
-                        ),
-                        Text(
-                          "Circles",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: dashboardController.pageIndex.value == 1
-                                ? ColorConstant.primaryColor
-                                : ColorConstant.grey50,
-                          ),
-                        )
-                      ],
-                    ),
+                  () => BottomNavBarWidget(
+                    border: dashboardController.pageIndex.value == 1
+                        ? const Border(
+                            bottom: BorderSide(
+                              width: 3,
+                              color: ColorConstant.primaryColor,
+                              style: BorderStyle.solid,
+                            ),
+                          )
+                        : null,
+                    gradient: dashboardController.pageIndex.value == 1
+                        ? LinearGradient(
+                            colors: [
+                              ColorConstant.primaryColor.withOpacity(0.5),
+                              ColorConstant.whiteColor.withOpacity(0),
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.center,
+                          )
+                        : null,
+                    icon: IconConstant.circles,
+                    title: "Circles",
+                    iconColor: dashboardController.pageIndex.value == 1
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
+                    textColor: dashboardController.pageIndex.value == 1
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
                   ),
                 ),
               ),
@@ -149,53 +112,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: GestureDetector(
                 onTap: () => dashboardController.pageIndex.value = 2,
                 child: Obx(
-                  () => Container(
-                    decoration: BoxDecoration(
-                      border: dashboardController.pageIndex.value == 2
-                          ? const Border(
-                              bottom: BorderSide(
-                                width: 3,
-                                color: ColorConstant.primaryColor,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          : null,
-                      gradient: dashboardController.pageIndex.value == 2
-                          ? LinearGradient(
-                              colors: [
-                                ColorConstant.primaryColor.withOpacity(0.5),
-                                ColorConstant.whiteColor.withOpacity(0),
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.center,
-                            )
-                          : null,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          IconConstant.places,
-                          height: 20,
-                          width: 20,
-                          filterQuality: FilterQuality.high,
-                          color: dashboardController.pageIndex.value == 2
-                              ? ColorConstant.primaryColor
-                              : ColorConstant.grey50,
-                        ),
-                        Text(
-                          "Places",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: dashboardController.pageIndex.value == 2
-                                ? ColorConstant.primaryColor
-                                : ColorConstant.grey50,
-                          ),
-                        )
-                      ],
-                    ),
+                  () => BottomNavBarWidget(
+                    border: dashboardController.pageIndex.value == 2
+                        ? const Border(
+                            bottom: BorderSide(
+                              width: 3,
+                              color: ColorConstant.primaryColor,
+                              style: BorderStyle.solid,
+                            ),
+                          )
+                        : null,
+                    gradient: dashboardController.pageIndex.value == 2
+                        ? LinearGradient(
+                            colors: [
+                              ColorConstant.primaryColor.withOpacity(0.5),
+                              ColorConstant.whiteColor.withOpacity(0),
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.center,
+                          )
+                        : null,
+                    icon: IconConstant.places,
+                    title: "Places",
+                    iconColor: dashboardController.pageIndex.value == 2
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
+                    textColor: dashboardController.pageIndex.value == 2
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
                   ),
                 ),
               ),
@@ -204,54 +148,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
               child: GestureDetector(
                 onTap: () => dashboardController.pageIndex.value = 3,
                 child: Obx(
-                  () => Container(
-                    decoration: BoxDecoration(
-                      border: dashboardController.pageIndex.value == 3
-                          ? const Border(
-                              bottom: BorderSide(
-                                width: 3,
-                                color: ColorConstant.primaryColor,
-                                style: BorderStyle.solid,
-                              ),
-                            )
-                          : null,
-                      gradient: dashboardController.pageIndex.value == 3
-                          ? LinearGradient(
-                              colors: [
-                                ColorConstant.primaryColor.withOpacity(0.5),
-                                ColorConstant.whiteColor.withOpacity(0),
-                              ],
-                              begin: Alignment.bottomCenter,
-                              end: Alignment.center,
-                            )
-                          : null,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          IconConstant.profile,
-                          height: 20,
-                          width: 20,
-                          filterQuality: FilterQuality.high,
-                          color: dashboardController.pageIndex.value == 3
-                              ? ColorConstant.primaryColor
-                              : ColorConstant.grey50,
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          "Profile",
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: dashboardController.pageIndex.value == 3
-                                ? ColorConstant.primaryColor
-                                : ColorConstant.grey50,
-                          ),
-                        )
-                      ],
-                    ),
+                  () => BottomNavBarWidget(
+                    border: dashboardController.pageIndex.value == 3
+                        ? const Border(
+                            bottom: BorderSide(
+                              width: 3,
+                              color: ColorConstant.primaryColor,
+                              style: BorderStyle.solid,
+                            ),
+                          )
+                        : null,
+                    gradient: dashboardController.pageIndex.value == 3
+                        ? LinearGradient(
+                            colors: [
+                              ColorConstant.primaryColor.withOpacity(0.5),
+                              ColorConstant.whiteColor.withOpacity(0),
+                            ],
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.center,
+                          )
+                        : null,
+                    icon: IconConstant.profile,
+                    title: "Profile",
+                    iconColor: dashboardController.pageIndex.value == 3
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
+                    textColor: dashboardController.pageIndex.value == 3
+                        ? ColorConstant.primaryColor
+                        : ColorConstant.grey50,
                   ),
                 ),
               ),

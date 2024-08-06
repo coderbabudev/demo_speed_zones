@@ -56,6 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       body: ListView(
         shrinkWrap: true,
+        physics: const BouncingScrollPhysics(),
         children: [
           Stack(
             fit: StackFit.loose,

@@ -1,6 +1,8 @@
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
+import 'package:demo_speed_zones/core/utils/util.dart';
+import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/share_invite_code_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,13 +15,7 @@ class GiveCircleNameScreen extends StatefulWidget {
 }
 
 class _GiveCircleNameScreenState extends State<GiveCircleNameScreen> {
-  final nameController = TextEditingController();
-
-  @override
-  void dispose() {
-    nameController.dispose();
-    super.dispose();
-  }
+  final circleController = Get.find<CircleManagementController>();
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +35,7 @@ class _GiveCircleNameScreenState extends State<GiveCircleNameScreen> {
               ).paddingOnly(top: 31),
             ),
             TextFormField(
-              controller: nameController,
+              controller: circleController.circleNameController,
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
@@ -83,9 +79,17 @@ class _GiveCircleNameScreenState extends State<GiveCircleNameScreen> {
             AuthenticateButton(
               image: "",
               textColor: ColorConstant.blackTextColor,
-              onPress: () => Get.to(() => ShareInviteCodeScreen(
-                    circleName: nameController.text,
-                  )),
+              onPress: () {
+                if (circleController.circleNameController.text.isNotEmpty) {
+                  Get.to(() => ShareInviteCodeScreen(
+                        circleName: circleController.circleNameController.text,
+                      ));
+                } else {
+                  if (circleController.circleNameController.text.isEmpty) {
+                    showMessageSnackBar('Please Enter your Circle Name');
+                  }
+                }
+              },
               color: ColorConstant.whiteColor,
               name: StringConstant.continueText,
             ).paddingOnly(left: 24, right: 24, bottom: 38),

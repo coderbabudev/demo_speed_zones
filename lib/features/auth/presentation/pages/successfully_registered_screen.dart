@@ -4,12 +4,18 @@ import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
 import 'package:demo_speed_zones/core/utils/util.dart';
+import 'package:demo_speed_zones/features/auth/presentation/model/user_model.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/join_circle_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class SuccessFullyRegisteredScreen extends StatefulWidget {
-  const SuccessFullyRegisteredScreen({super.key});
+  const SuccessFullyRegisteredScreen({
+    super.key,
+    required this.userInfo,
+  });
+
+  final UserDetails userInfo;
 
   @override
   State<SuccessFullyRegisteredScreen> createState() =>
@@ -70,7 +76,9 @@ class _SuccessFullyRegisteredScreenState
               const Spacer(),
               AuthenticateButton(
                 color: ColorConstant.primaryColor,
-                onPress: () => Get.to(() => const JoinCircleSplashScreen()),
+                onPress: () => Get.offAll(() => JoinCircleSplashScreen(
+                      userName: widget.userInfo.name.toString(),
+                    )),
                 name: 'Homepage',
                 textColor: ColorConstant.whiteColor,
                 image: '',
