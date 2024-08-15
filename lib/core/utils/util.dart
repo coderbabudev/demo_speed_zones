@@ -5,6 +5,7 @@ import 'package:demo_speed_zones/features/profile/presentation/widget/logout_but
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:pinput/pinput.dart';
 
 showMessageSnackBar(String message,
@@ -155,6 +156,8 @@ logoutBottomSheet() {
     },
   );
 }
+
+String currentDate = DateFormat('yyyy MMMM dd, hh:mm a').format(DateTime.now());
 
 // showCongratulationDialog(BuildContext context, AnimationController controller) {
 //   showDialog(

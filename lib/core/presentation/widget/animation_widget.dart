@@ -5,10 +5,14 @@ class AnimationWidget extends StatefulWidget {
     super.key,
     required this.child,
     required this.animationType,
+    this.duration,
+    this.begin,
   });
 
   final Widget child;
   final String animationType;
+  final Duration? duration;
+  final Offset? begin;
 
   @override
   State<AnimationWidget> createState() => _AnimationWidgetState();
@@ -24,9 +28,9 @@ class _AnimationWidgetState extends State<AnimationWidget>
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(vsync: this, duration: const Duration(seconds: 1))
-          ..forward();
+    animationController = AnimationController(
+        vsync: this, duration: widget.duration ?? const Duration(seconds: 1))
+      ..forward();
     fadeAnimation = CurvedAnimation(
       parent: animationController,
       curve: Curves.easeInOut,
@@ -36,8 +40,8 @@ class _AnimationWidgetState extends State<AnimationWidget>
       curve: Curves.easeInOut,
     );
     slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.5),
-      end: const Offset(0, 1),
+      begin: widget.begin ?? const Offset(0, 0.5),
+      end: Offset.zero,
     ).animate(animationController);
   }
 

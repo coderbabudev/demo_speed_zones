@@ -90,7 +90,6 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                     (authController.newPasswordController.text.length > 6 ||
                         authController.confirmPasswordController.text.length >
                             6)) {
-                  print("Password reset successfully.");
                 } else {
                   if (authController.newPasswordController.text.isEmpty) {
                     showMessageSnackBar('New Password field is required!');

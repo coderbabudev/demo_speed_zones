@@ -2,7 +2,6 @@ import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
-import 'package:demo_speed_zones/features/circle_management/presentation/pages/describe_role_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
@@ -76,43 +75,38 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
               color: ColorConstant.whiteColor,
               name: StringConstant.shareCode,
             ).paddingOnly(top: 50, bottom: 20, left: 24, right: 24),
-            ElevatedButton(
-              onPressed: () async {
-                circleController.isLoading.value = true;
-                await circleController
-                    .createCircleGroup(widget.circleName)
-                    .then((value) {
-                  circleController.isLoading.value = false;
-                });
-                Get.to(() => const DescribeRoleInCircleScreen());
-              },
-              style: ElevatedButton.styleFrom(
-                  fixedSize: const Size(double.infinity, 56),
-                  maximumSize: const Size(double.infinity, 56),
-                  minimumSize: const Size(double.infinity, 56),
-                  visualDensity: VisualDensity.comfortable,
-                  elevation: 0,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      side: const BorderSide(
-                        color: ColorConstant.whiteColor,
-                        style: BorderStyle.solid,
-                        width: 1,
-                      )),
-                  backgroundColor: Colors.transparent,
-                  shadowColor: const Color(0xFFA7A9B7).withOpacity(0.3)),
-              child: circleController.isLoading.value
-                  ? const CircularProgressIndicator()
-                  : const Text(
-                      StringConstant.codeShareDone,
-                      style: TextStyle(
-                        color: ColorConstant.whiteColor,
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
+            Obx(() {
+              return ElevatedButton(
+                onPressed: () async =>
+                    await circleController.createCircleGroup(widget.circleName),
+                style: ElevatedButton.styleFrom(
+                    fixedSize: const Size(double.infinity, 56),
+                    maximumSize: const Size(double.infinity, 56),
+                    minimumSize: const Size(double.infinity, 56),
+                    visualDensity: VisualDensity.comfortable,
+                    elevation: 0,
+                    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        side: const BorderSide(
+                          color: ColorConstant.whiteColor,
+                          style: BorderStyle.solid,
+                          width: 1,
+                        )),
+                    backgroundColor: Colors.transparent,
+                    shadowColor: const Color(0xFFA7A9B7).withOpacity(0.3)),
+                child: circleController.isLoading.value
+                    ? const CircularProgressIndicator()
+                    : const Text(
+                        StringConstant.codeShareDone,
+                        style: TextStyle(
+                          color: ColorConstant.whiteColor,
+                          fontWeight: FontWeight.w500,
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-            ).paddingOnly(left: 24, right: 24, bottom: 38),
+              );
+            }).paddingOnly(left: 24, right: 24, bottom: 38),
           ],
         ),
       ),

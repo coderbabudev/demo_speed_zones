@@ -55,6 +55,7 @@ class AuthTextField extends StatelessWidget {
     required this.prefixIcon,
     this.obscureText = false,
     this.suffixOnPress,
+    this.onSaved,
     this.textInputAction,
   });
 
@@ -63,6 +64,7 @@ class AuthTextField extends StatelessWidget {
   final IconData? suffixIcon;
   final String hintText;
   final bool obscureText;
+  final void Function(String?)? onSaved;
   final TextInputAction? textInputAction;
   final void Function()? suffixOnPress;
 
@@ -78,6 +80,7 @@ class AuthTextField extends StatelessWidget {
         fontSize: 16,
         color: ColorConstant.blackColor,
       ),
+      onSaved: onSaved,
       cursorColor: ColorConstant.blackColor,
       textInputAction: textInputAction,
       decoration: InputDecoration(

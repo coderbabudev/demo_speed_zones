@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
+import 'package:demo_speed_zones/features/profile/presentation/controller/profile_controller.dart';
 import 'package:demo_speed_zones/features/profile/presentation/pages/add_new_member_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -13,6 +16,8 @@ class CircleManagementScreen extends StatefulWidget {
 }
 
 class _CircleManagementScreenState extends State<CircleManagementScreen> {
+  final profileController = Get.find<ProfileController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,39 +60,65 @@ class _CircleManagementScreenState extends State<CircleManagementScreen> {
         children: [
           const SizedBox(height: 15),
           Expanded(
-            child: ListView.builder(
-              itemCount: 18,
-              scrollDirection: Axis.vertical,
-              padding: const EdgeInsets.only(left: 25, right: 25),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () {
-                    Get.to(
-                      () => const AddNewMemberPage(
-                        circleName: "Friends",
+            child: StreamBuilder<QuerySnapshot>(
+              stream:
+                  profileController.firestore.collection('circles').snapshots(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Something went wrong'));
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('No circles available'));
+                }
+
+                var circles = snapshot.data!.docs;
+
+                return ListView.builder(
+                  itemCount: circles.length,
+                  scrollDirection: Axis.vertical,
+                  padding: const EdgeInsets.only(left: 25, right: 25),
+                  shrinkWrap: true,
+                  itemBuilder: (context, index) {
+                    var circleData =
+                        circles[index].data() as Map<String, dynamic>;
+                    String circleName =
+                        circleData['circle_name'] ?? 'Unknown Circle';
+
+                    return GestureDetector(
+                      onTap: () {
+                        Get.to(() => AddNewMemberPage(circleName: circleName));
+                      },
+                      child: AnimationWidget(
+                        animationType: "SLIDE",
+                        duration: const Duration(milliseconds: 400),
+                        begin: const Offset(-1, 0),
+                        child: Container(
+                          height: 56,
+                          width: MediaQuery.of(context).size.width,
+                          margin: const EdgeInsets.only(top: 24),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: ColorConstant.lightGreyColor,
+                          ),
+                          child: Center(
+                            child: Text(
+                              circleName,
+                              style: const TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: 16,
+                                color: ColorConstant.blackTextColor,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
                     );
                   },
-                  child: Container(
-                    height: 56,
-                    width: MediaQuery.of(context).size.width,
-                    margin: const EdgeInsets.only(top: 24),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8),
-                      color: ColorConstant.lightGreyColor,
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "My Family",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 16,
-                          color: ColorConstant.blackTextColor,
-                        ),
-                      ),
-                    ),
-                  ),
                 );
               },
             ),

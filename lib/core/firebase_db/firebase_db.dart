@@ -48,10 +48,18 @@ class DatabaseMethod {
         createdAt: circleData.createdAt,
         updatedAt: circleData.updatedAt,
       );
-      await _firestore.collection('circles').doc().set(circle.toJson());
+      await _firestore
+          .collection('circles')
+          .doc(circleData.circleInviteCode)
+          .set(circle.toJson());
     } else {
       throw Exception("Circle Not created.");
     }
+  }
+
+  Future<void> updatePassword(newPassword) async {
+    User? user = _auth.currentUser;
+    await user?.updatePassword(newPassword);
   }
 
   Future<void> fetchUserdata(String userName) async {

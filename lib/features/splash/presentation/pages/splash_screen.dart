@@ -16,12 +16,21 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  final AuthController authController = Get.find<AuthController>();
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () {
-      Get.offAll(() => const AuthWrapper());
-    });
+    checkAuthStatus();
+  }
+
+  void checkAuthStatus() async {
+    await Future.delayed(const Duration(seconds: 3), () {});
+    if (authController.isLoggedIn.value) {
+      Get.offAll(() => const DashboardScreen());
+    } else {
+      Get.offAll(() => const GetStartedScreen());
+    }
   }
 
   @override

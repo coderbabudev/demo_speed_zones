@@ -9,8 +9,22 @@ class StringConstant {
   static const registerWithGoogle = "Register with Goggle";
   static const signUpApple = "Sign Up With Apple";
   static const signUpFacebook = "Sign Up With Facebook";
+  static const nameFieldIsRequired = "Name field is required.";
+  static const nameIsTooShort = "Name is too Short.";
+  static const emailFieldIsRequired = "Email field is required";
+  static const passwordFieldIsRequired = "Password field is required";
+  static const phoneFieldIsRequired = "Phone field is required";
+  static const oTPFieldIsRequired = "OTP field is required";
+  static const invalidOTP = "Invalid OTP";
+  static const invalidMobileNumber = "Invalid Mobile number";
+  static const enterAValidEmailAddress = "Enter a valid email address";
+  static const passwordMustBeLongerThan6Characters =
+      "Password must be longer than 6 characters.";
+
   static const alreadyHaveAccount = "Already Have an Account? ";
   static const logIn = "Login";
+  static const loginSuccessfully = "Login Successfully";
+  static const unexpectedErrorOccurred = "Unexpected error occurred.";
   static const register = "Register";
   static const signIn = "Sign In";
   static const discoverBestHere = "Discover best here! 👋";
@@ -23,9 +37,14 @@ class StringConstant {
   static const forgotPassword = "forgot password?";
   static const forgetPassword = "Forget Password?";
   static const newPassword = "New Password";
+  static const newPasswordFieldIsRequired = "New Password field is required";
   static const oldPassword = "Old Password";
+  static const oldPasswordFieldIsRequired = "Old Password field is required.";
   static const resetPassword = "Reset Password";
   static const confirmPassword = "Confirm Password";
+  static const confirmPasswordFieldIsRequired =
+      "Confirm password field is required.";
+  static const confirmPasswordDoesNotMatch = "Confirm Password does not match";
   static const newPasswordSubText = "Create your new password to Login";
   static const verifyPhone = 'Verify Phone';
   static const verifyPhoneSubText = 'Code is sent to';
@@ -92,4 +111,12 @@ class StringConstant {
   static const circleManagement = 'Circle Management';
   static const addNewMember = 'Add a new Member';
   static const selectLanguage = 'Select Languange';
+  static const invalidInviteCode = 'Invalid invite code.';
+  static const failedToJoinCircle = 'Failed to join circle: ';
+  static const failedToUploadImage = 'Failed to upload image: ';
+  static const noUserFoundForThatEmail = 'No user found for that email.';
+  static const anErrorOccurred = 'An error occurred: ';
+  static const passwordChangedSuccessfully = 'Password changed successfully';
+  static const userIsAlreadyPartOfThisCircle =
+      'User is already part of this circle.';
 }

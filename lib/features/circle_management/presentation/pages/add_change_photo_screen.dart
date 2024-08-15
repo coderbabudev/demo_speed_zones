@@ -1,11 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/notification_premission_request_screen.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -137,20 +135,8 @@ class _SelectProfilePictureScreenState
                 isLoaderColor: ColorConstant.blackColor,
                 onPress: circleManagementController.imageFile.value == null
                     ? () {}
-                    : () async {
-                        circleManagementController.isLoading.value = true;
-                        FirebaseAuth auth = FirebaseAuth.instance;
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .doc(auth.currentUser?.uid)
-                            .update({
-                          'image_url':
-                              circleManagementController.imageFile.value!.path
-                        }).then((value) {
-                          circleManagementController.isLoading.value = false;
-                          Get.to(() => const NotificationPerRequestScreen());
-                        });
-                      },
+                    : () async => await circleManagementController.uploadImage(
+                        circleManagementController.imageFile.value!),
                 color: circleManagementController.imageFile.value == null
                     ? const Color(0xFFA7A9B7).withOpacity(0.3)
                     : ColorConstant.whiteColor,

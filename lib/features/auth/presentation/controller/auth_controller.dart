@@ -1,3 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/core/firebase_db/firebase_db.dart';
 import 'package:demo_speed_zones/core/services/shared_prefrences_services.dart';
 import 'package:demo_speed_zones/core/utils/util.dart';
 import 'package:demo_speed_zones/features/auth/presentation/model/user_model.dart';
@@ -8,8 +11,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-
-import '../../../../core/firebase_db/firebase_db.dart';
 
 class AuthController extends GetxController {
   final lgnEmailController = TextEditingController();
@@ -40,6 +41,28 @@ class AuthController extends GetxController {
   RxBool isPhoneVerified = false.obs;
   final db = DatabaseMethod();
   FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseFirestore firebaseDb = FirebaseFirestore.instance;
+
+  @override
+  void onInit() {
+    super.onInit();
+    auth.authStateChanges().listen((User? user) async {
+      if (user != null) {
+        final userDoc =
+            await firebaseDb.collection('users').doc(user.uid).get();
+        if (userDoc.exists) {
+          isLoggedIn.value = true;
+        } else {
+          isLoggedIn.value = false;
+          await auth.signOut(); // Sign out if user is deleted
+        }
+      } else {
+        isLoggedIn.value = false;
+      }
+    });
+    loadUserCredentials();
+    db.fetchUserdata(userDetails.name.toString());
+  }
 
   void lgnRememberMeCheck(bool value) {
     isRememberLgn.value = value;
@@ -117,34 +140,31 @@ class AuthController extends GetxController {
             await SharedPrefs().clear(SharedPrefs.lgnPasswordKey);
           }
           Get.offAll(() => const DashboardScreen());
-          showMessageSnackBar(
-            'Login Successfully.',
-            bgColor: Colors.green,
-            snackPosition: SnackPosition.TOP,
-          );
+          showMessageSnackBar(StringConstant.loginSuccessfully,
+              bgColor: Colors.green, snackPosition: SnackPosition.TOP);
         } else {
-          showMessageSnackBar('Unexpected error occurred.');
+          showMessageSnackBar(StringConstant.unexpectedErrorOccurred);
         }
       } on FirebaseAuthException catch (e) {
         if (e.email != lgnEmailController.text) {
-          showMessageSnackBar('No user found for that email.');
+          showMessageSnackBar(StringConstant.noUserFoundForThatEmail);
         } else {
-          showMessageSnackBar('An error occurred: ${e.code}');
+          showMessageSnackBar('${StringConstant.anErrorOccurred}${e.code}');
         }
       } catch (e) {
-        showMessageSnackBar('An error occurred: $e');
+        showMessageSnackBar('${StringConstant.anErrorOccurred}$e');
       }
       setLoading(false);
     } else {
       setLoading(false);
       if (lgnEmailController.text.isEmpty) {
-        showMessageSnackBar('Email field is required.');
+        showMessageSnackBar(StringConstant.emailFieldIsRequired);
       } else if (lgnPasswordController.text.isEmpty) {
-        showMessageSnackBar('Password field is required.');
+        showMessageSnackBar(StringConstant.passwordFieldIsRequired);
       } else if (!regex.hasMatch(lgnEmailController.text)) {
-        showMessageSnackBar('Enter a valid email address.');
+        showMessageSnackBar(StringConstant.enterAValidEmailAddress);
       } else if (lgnPasswordController.text.length <= 6) {
-        showMessageSnackBar('Password must be longer than 6 characters.');
+        showMessageSnackBar(StringConstant.passwordMustBeLongerThan6Characters);
       }
     }
   }
@@ -162,17 +182,17 @@ class AuthController extends GetxController {
       isMobileRegister.value = true;
     } else {
       if (regNameController.text.isEmpty) {
-        showMessageSnackBar('Name field is required.');
+        showMessageSnackBar(StringConstant.nameFieldIsRequired);
       } else if (regNameController.text.length < 2) {
-        showMessageSnackBar('Name is too Short.');
+        showMessageSnackBar(StringConstant.nameIsTooShort);
       } else if (regEmailController.text.isEmpty) {
-        showMessageSnackBar('Email field is required.');
+        showMessageSnackBar(StringConstant.emailFieldIsRequired);
       } else if (!regex.hasMatch(regEmailController.text)) {
-        showMessageSnackBar('Enter a valid email address.');
+        showMessageSnackBar(StringConstant.enterAValidEmailAddress);
       } else if (regPasswordController.text.isEmpty) {
-        showMessageSnackBar('Password field is required.');
+        showMessageSnackBar(StringConstant.passwordFieldIsRequired);
       } else if (regPasswordController.text.length <= 6) {
-        showMessageSnackBar('Password must be longer than 6 character');
+        showMessageSnackBar(StringConstant.passwordMustBeLongerThan6Characters);
       } else {}
     }
     update();
@@ -215,9 +235,9 @@ class AuthController extends GetxController {
     } else {
       setLoading(false);
       if (regMobileNumberController.text.isEmpty) {
-        showMessageSnackBar('Phone field is required.');
+        showMessageSnackBar(StringConstant.phoneFieldIsRequired);
       } else if (regMobileNumberController.text.length != 10) {
-        showMessageSnackBar('Invalid Mobile number.');
+        showMessageSnackBar(StringConstant.invalidMobileNumber);
       } else {}
     }
     update();
@@ -277,32 +297,12 @@ class AuthController extends GetxController {
     } else {
       setLoading(false);
       if (regOtpController.text.isEmpty) {
-        showMessageSnackBar('OTP field is required.');
+        showMessageSnackBar(StringConstant.oTPFieldIsRequired);
       } else if (regOtpController.text.length != 6) {
-        showMessageSnackBar('Invalid OTP.');
+        showMessageSnackBar(StringConstant.invalidOTP);
       }
     }
     update();
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    auth.authStateChanges().listen((User? user) {
-      isLoggedIn.value = user != null;
-    });
-    loadUserCredentials();
-    db.fetchUserdata(userDetails.name.toString());
-  }
-
-  @override
-  void onClose() {
-    regEmailController.dispose();
-    regNameController.dispose();
-    regPasswordController.dispose();
-    regMobileNumberController.dispose();
-    regOtpController.dispose();
-    super.onClose();
   }
 
   clearTextField() {
@@ -319,5 +319,15 @@ class AuthController extends GetxController {
     countryCode.value = '';
     isMobileRegister.value = false;
     update();
+  }
+
+  @override
+  void onClose() {
+    regEmailController.dispose();
+    regNameController.dispose();
+    regPasswordController.dispose();
+    regMobileNumberController.dispose();
+    regOtpController.dispose();
+    super.onClose();
   }
 }

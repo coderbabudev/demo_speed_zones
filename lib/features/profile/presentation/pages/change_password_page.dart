@@ -101,13 +101,16 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                     profileController.showConfirmPassword.value ? false : true,
               ).paddingOnly(top: 32)),
           const Spacer(),
-          AuthenticateButton(
-            name: StringConstant.changePassword,
-            onPress: () {},
-            image: '',
-            color: ColorConstant.primaryColor,
-            textColor: ColorConstant.whiteColor,
-          ).paddingOnly(bottom: 30),
+          Obx(() {
+            return AuthenticateButton(
+              name: StringConstant.changePassword,
+              isLoader: profileController.isLoading.value,
+              onPress: () => profileController.changePassword(),
+              image: '',
+              color: ColorConstant.primaryColor,
+              textColor: ColorConstant.whiteColor,
+            );
+          }).paddingOnly(bottom: 30),
         ],
       ).paddingSymmetric(horizontal: 20),
     );

@@ -3,7 +3,6 @@ import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
 import 'package:demo_speed_zones/core/utils/util.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/controller/circle_management_controller.dart';
-import 'package:demo_speed_zones/features/circle_management/presentation/pages/describe_role_screen.dart';
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/give_circle_name_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -80,13 +79,13 @@ class _JoinCircleInviteCodeScreenState
                     Obx(() {
                       return ElevatedButton(
                         onPressed: inviteController.isAllFieldsFilled.value
-                            ? () {
-                                Get.to(
-                                    () => const DescribeRoleInCircleScreen());
+                            ? () async {
+                                final inviteCode =
+                                    inviteController.inviteCodeController.text;
+                                await inviteController.onSubmitCode(inviteCode);
                               }
-                            : () {
-                                showMessageSnackBar('Enter your invite code.');
-                              },
+                            : () =>
+                                showMessageSnackBar('Enter your invite code.'),
                         style: ElevatedButton.styleFrom(
                           fixedSize: const Size(double.infinity, 56),
                           maximumSize: const Size(double.infinity, 56),
