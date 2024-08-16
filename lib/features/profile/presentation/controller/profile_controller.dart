@@ -22,7 +22,8 @@ class ProfileController extends GetxController {
   RxBool showNewPassword = false.obs;
   RxBool isLoading = false.obs;
   RxString countryCode = '91'.obs;
-  String initialCountryCode = 'IN';
+  RxString initialCountryCode = 'IN'.obs;
+  List<Map<String, dynamic>> circleMembersList = [];
   RxBool showOldPassword = false.obs;
   RxBool showConfirmPassword = false.obs;
   final firebaseDBMethod = DatabaseMethod();
@@ -42,6 +43,7 @@ class ProfileController extends GetxController {
     generateOtherFeature();
     showAllLanguages();
     fetchUserDetails();
+    clearController();
     super.onInit();
   }
 
@@ -80,14 +82,30 @@ class ProfileController extends GetxController {
           );
           await user.reauthenticateWithCredential(credential);
           await firebaseDBMethod.updatePassword(newPasswordController.text);
-          showMessageSnackBar(StringConstant.passwordChangedSuccessfully);
+          showMessageSnackBar(
+              bgColor: Colors.green,
+              StringConstant.passwordChangedSuccessfully);
           clearController();
         } on FirebaseAuthException catch (e) {
-          showMessageSnackBar(e.message ?? 'Failed to change password');
+          if (e.code == 'wrong-password') {
+            showMessageSnackBar(StringConstant.oldPasswordWasIncorrect);
+          } else if (e.code == 'requires-recent-login') {
+            showMessageSnackBar(
+                StringConstant.pleaseLogInAgainToUpdateYourPassword);
+          } else {
+            showMessageSnackBar('Error: ${e.message}');
+          }
+        } catch (e) {
+          showMessageSnackBar('${StringConstant.anErrorOccurred}$e');
+        } finally {
+          isLoading.value = false;
+          update();
         }
+      } else {
+        showMessageSnackBar(StringConstant.noUserIsCurrentlyLoggedIn);
+        isLoading.value = false;
+        update();
       }
-      isLoading.value = false;
-      update();
     } else {
       isLoading.value = false;
       if (oldPassword.value.isEmpty) {
@@ -136,7 +154,8 @@ class ProfileController extends GetxController {
             .update(updates);
       }
       isLoading.value = false;
-      showMessageSnackBar('Profile updated successfully');
+      showMessageSnackBar(
+          bgColor: Colors.green, 'Profile updated successfully');
     } catch (e) {
       isLoading.value = false;
       debugPrint('${StringConstant.failedToUploadImage}$e');
@@ -147,7 +166,7 @@ class ProfileController extends GetxController {
 
   Future<String> uploadImageToFirebase(File imageFile) async {
     Reference storageRef = FirebaseStorage.instance.ref().child(
-        'images/${auth.currentUser?.uid}/${imageFile.path.split('/').last}.jpg');
+        'images/${auth.currentUser?.uid}/${imageFile.path.split('/').last}');
 
     UploadTask uploadTask = storageRef.putFile(imageFile);
     TaskSnapshot snapshot = await uploadTask;
@@ -174,6 +193,74 @@ class ProfileController extends GetxController {
       return null;
     }
   }
+
+  Future<void> fetchCircleMembers(circleId) async {
+    isLoading.value = true;
+    try {
+      circleMembersList.clear();
+      DocumentSnapshot circleSnapshot =
+          await firestore.collection('circles').doc(circleId).get();
+
+      if (circleSnapshot.exists) {
+        List<dynamic> members = circleSnapshot['circle_members'];
+        String ownerId = circleSnapshot[
+            'circle_admin_uid']; // Assuming you have an owner_id field
+
+        for (String userId in members) {
+          DocumentSnapshot userSnapshot =
+              await firestore.collection('users').doc(userId).get();
+
+          if (userSnapshot.exists) {
+            Map<String, dynamic> userData =
+                userSnapshot.data() as Map<String, dynamic>;
+
+            userData['circle_admin_uid'] = userId == ownerId;
+
+            if (userId == ownerId) {
+              circleMembersList.insert(
+                  0, userData); // Insert owner at the start
+            } else {
+              circleMembersList.add(userData); // Add other members normally
+            }
+          }
+        }
+        isLoading.value = false;
+        update();
+      }
+    } catch (e) {
+      isLoading.value = false;
+      print('Error fetching members: $e');
+    }
+  }
+
+  /*Future<void> fetchCircleMembers(circleId) async {
+    isLoading.value = true;
+    try {
+      circleMembersList.clear();
+      DocumentSnapshot circleSnapshot =
+          await firestore.collection('circles').doc(circleId).get();
+
+      if (circleSnapshot.exists) {
+        List<dynamic> members = circleSnapshot['circle_members'];
+
+        for (String userId in members) {
+          DocumentSnapshot userSnapshot =
+              await firestore.collection('users').doc(userId).get();
+
+          if (userSnapshot.exists) {
+            Map<String, dynamic> userData =
+                userSnapshot.data() as Map<String, dynamic>;
+            circleMembersList.add(userData);
+          }
+        }
+        isLoading.value = false;
+        update();
+      }
+    } catch (e) {
+      isLoading.value = false;
+      print('Error fetching members: $e');
+    }
+  }*/
 
   generateMainFeature() {
     mainFeature.addAll([

@@ -148,6 +148,8 @@ class AuthController extends GetxController {
       } on FirebaseAuthException catch (e) {
         if (e.email != lgnEmailController.text) {
           showMessageSnackBar(StringConstant.noUserFoundForThatEmail);
+        } else if (e.code == 'wrong-password') {
+          showMessageSnackBar(StringConstant.incorrectPassword);
         } else {
           showMessageSnackBar('${StringConstant.anErrorOccurred}${e.code}');
         }
@@ -173,6 +175,7 @@ class AuthController extends GetxController {
     const pattern =
         r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+";
     final regex = RegExp(pattern);
+    isLoading.value = true;
     if (regEmailController.text.isNotEmpty &&
         regNameController.text.length > 2 &&
         regex.hasMatch(regEmailController.text) &&
@@ -180,7 +183,9 @@ class AuthController extends GetxController {
         regNameController.text.isNotEmpty &&
         regPasswordController.text.isNotEmpty) {
       isMobileRegister.value = true;
+      isLoading.value = false;
     } else {
+      isLoading.value = false;
       if (regNameController.text.isEmpty) {
         showMessageSnackBar(StringConstant.nameFieldIsRequired);
       } else if (regNameController.text.length < 2) {
@@ -211,7 +216,7 @@ class AuthController extends GetxController {
     if (regMobileNumberController.text.isNotEmpty &&
         regMobileNumberController.text.length == 10 &&
         isMobileRegister.value) {
-      setLoading(true);
+      isLoading.value = true;
       await auth.verifyPhoneNumber(
         phoneNumber: '+$countryCode ${regMobileNumberController.text.trim()}',
         verificationCompleted: (PhoneAuthCredential credential) async {},
@@ -231,9 +236,9 @@ class AuthController extends GetxController {
         },
         codeAutoRetrievalTimeout: (String verificationId) {},
       );
-      setLoading(false);
+      isLoading.value = false;
     } else {
-      setLoading(false);
+      isLoading.value = false;
       if (regMobileNumberController.text.isEmpty) {
         showMessageSnackBar(StringConstant.phoneFieldIsRequired);
       } else if (regMobileNumberController.text.length != 10) {

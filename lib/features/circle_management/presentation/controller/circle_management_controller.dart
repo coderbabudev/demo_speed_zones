@@ -82,9 +82,13 @@ class CircleManagementController extends GetxController {
 
   Future<void> uploadImage(File image) async {
     isLoading.value = true;
+    if (auth.currentUser == null) {
+      showMessageSnackBar(StringConstant.userIsNotAuthenticated);
+      return;
+    }
     try {
       final storageRef = FirebaseStorage.instance.ref().child(
-          'images/${auth.currentUser?.uid}/${image.path.split('/').last}.jpg');
+          'images/${auth.currentUser?.uid}/${image.path.split('/').last}');
       final uploadTask = storageRef.putFile(image);
       final snapshot = await uploadTask.whenComplete(() {});
       final imageUrl = await snapshot.ref.getDownloadURL();

@@ -84,8 +84,8 @@ class _JoinCircleInviteCodeScreenState
                                     inviteController.inviteCodeController.text;
                                 await inviteController.onSubmitCode(inviteCode);
                               }
-                            : () =>
-                                showMessageSnackBar('Enter your invite code.'),
+                            : () => showMessageSnackBar(
+                                StringConstant.enterYourInviteCode),
                         style: ElevatedButton.styleFrom(
                           fixedSize: const Size(double.infinity, 56),
                           maximumSize: const Size(double.infinity, 56),

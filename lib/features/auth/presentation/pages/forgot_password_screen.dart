@@ -63,10 +63,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                   authController.forgetEmailController.clear();
                 } else {
                   if (authController.forgetEmailController.text.isEmpty) {
-                    showMessageSnackBar('Email field is required!');
+                    showMessageSnackBar(StringConstant.emailFieldIsRequired);
                   } else if (!regex
                       .hasMatch(authController.forgetEmailController.text)) {
-                    showMessageSnackBar('Enter a valid email address.');
+                    showMessageSnackBar(StringConstant.enterAValidEmailAddress);
                   }
                 }
               },

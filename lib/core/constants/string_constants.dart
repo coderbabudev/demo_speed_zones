@@ -104,6 +104,7 @@ class StringConstant {
   static const accountSetting = 'Account Settings';
   static const other = 'Other';
   static const logout = 'Logout';
+  static const weakPassword = 'Weak Password';
   static const logoutConfirmText = 'Are you sure you want  to log out?';
   static const editProfileSubText = 'You can always change it later';
   static const changePassword = 'Change Password';
@@ -117,6 +118,15 @@ class StringConstant {
   static const noUserFoundForThatEmail = 'No user found for that email.';
   static const anErrorOccurred = 'An error occurred: ';
   static const passwordChangedSuccessfully = 'Password changed successfully';
+  static const incorrectPassword = 'Incorrect password';
+  static const userIsNotAuthenticated = 'User is not authenticated';
+  static const pleaseEnterYourCircleName = 'Please Enter your Circle Name';
+  static const enterYourInviteCode = 'Enter your invite code';
+  static const locationPermissionIsDenied = 'Location permission is Denied';
+  static const oldPasswordWasIncorrect = 'Old password was incorrect';
+  static const pleaseLogInAgainToUpdateYourPassword =
+      'Please log in again to update your password';
+  static const noUserIsCurrentlyLoggedIn = 'No user is currently logged in';
   static const userIsAlreadyPartOfThisCircle =
       'User is already part of this circle.';
 }

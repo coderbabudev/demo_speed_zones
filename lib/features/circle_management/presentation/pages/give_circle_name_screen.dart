@@ -86,7 +86,8 @@ class _GiveCircleNameScreenState extends State<GiveCircleNameScreen> {
                       ));
                 } else {
                   if (circleController.circleNameController.text.isEmpty) {
-                    showMessageSnackBar('Please Enter your Circle Name');
+                    showMessageSnackBar(
+                        StringConstant.pleaseEnterYourCircleName);
                   }
                 }
               },

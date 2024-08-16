@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
@@ -64,7 +65,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           builder: (context, snapshot) {
             Map<String, dynamic> userData = snapshot.data ?? {};
             profileController.countryCode.value == userData['country_code'];
-            profileController.phoneNumberController.text == userData['phone'];
+            profileController.phoneNumberController.text == userData['phone'] ??
+                '';
             return SingleChildScrollView(
               scrollDirection: Axis.vertical,
               child: Column(
@@ -103,25 +105,38 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                               ? const Center(
                                   child: CircularProgressIndicator(),
                                 )
-                              : profileController.imageFile.value != null
-                                  ? Obx(() {
-                                      return AnimationWidget(
-                                        animationType: "FADE",
-                                        child: Image.file(
-                                          profileController.imageFile.value!,
-                                          filterQuality: FilterQuality.high,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      );
-                                    })
-                                  : AnimationWidget(
-                                      animationType: "FADE",
-                                      child: Image.network(
-                                        userData['image_url'],
-                                        filterQuality: FilterQuality.high,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
+                              : Obx(() {
+                                  return profileController.imageFile.value !=
+                                          null
+                                      ? AnimationWidget(
+                                          animationType: "FADE",
+                                          child: Image.file(
+                                            profileController.imageFile.value!,
+                                            filterQuality: FilterQuality.high,
+                                            fit: BoxFit.cover,
+                                          ),
+                                        )
+                                      : userData['image_url'] == null
+                                          ? Image.asset(
+                                              ImageConstant.dummyUser,
+                                              filterQuality: FilterQuality.high,
+                                              fit: BoxFit.cover,
+                                            )
+                                          : AnimationWidget(
+                                              animationType: "FADE",
+                                              child: CachedNetworkImage(
+                                                imageUrl: userData['image_url'],
+                                                filterQuality:
+                                                    FilterQuality.high,
+                                                placeholder: (context, state) =>
+                                                    const Center(
+                                                  child:
+                                                      CircularProgressIndicator(),
+                                                ),
+                                                fit: BoxFit.cover,
+                                              ),
+                                            );
+                                }),
                         ),
                       ),
                       GestureDetector(
@@ -249,7 +264,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                     ),
-                    initialCountryCode: profileController.initialCountryCode,
+                    initialCountryCode:
+                        profileController.initialCountryCode.value,
                     onCountryChanged: (Country country) {
                       profileController.countryCode.value = country.dialCode;
                     },

@@ -19,7 +19,7 @@ class NotificationPerRequestScreen extends StatelessWidget {
       if (status.isGranted) {
         Get.offAll(() => const DashboardScreen());
       } else if (status.isDenied) {
-        showMessageSnackBar('Location permission is Denied');
+        showMessageSnackBar(StringConstant.locationPermissionIsDenied);
       } else if (status.isPermanentlyDenied) {
         openAppSettings();
       }

@@ -323,15 +323,17 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
                                     ),
                                   ],
                                 ).paddingOnly(left: 20, right: 20),
-                                AuthenticateButton(
-                                  name: StringConstant.register,
-                                  isLoader: authController.isLoading.value,
-                                  onPress: () async => await authController
-                                      .signUpWithEmailPass(),
-                                  image: '',
-                                  color: ColorConstant.primaryColor,
-                                  textColor: ColorConstant.whiteColor,
-                                ).paddingOnly(left: 20, right: 20),
+                                Obx(() {
+                                  return AuthenticateButton(
+                                    name: StringConstant.register,
+                                    isLoader: authController.isLoading.value,
+                                    onPress: () =>
+                                        authController.signUpWithEmailPass(),
+                                    image: '',
+                                    color: ColorConstant.primaryColor,
+                                    textColor: ColorConstant.whiteColor,
+                                  );
+                                }).paddingOnly(left: 20, right: 20),
                                 AuthenticateButton(
                                   name: StringConstant.registerWithGoogle,
                                   onPress: () {},

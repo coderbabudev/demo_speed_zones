@@ -86,17 +86,22 @@ class _CircleManagementScreenState extends State<CircleManagementScreen> {
                   itemBuilder: (context, index) {
                     var circleData =
                         circles[index].data() as Map<String, dynamic>;
+                    print("circles :-- $circleData");
                     String circleName =
                         circleData['circle_name'] ?? 'Unknown Circle';
 
                     return GestureDetector(
                       onTap: () {
-                        Get.to(() => AddNewMemberPage(circleName: circleName));
+                        Get.to(
+                          () => AddNewMemberPage(
+                            circleName: circleName,
+                            circleId: circleData['circle_invite_code'],
+                          ),
+                        );
                       },
                       child: AnimationWidget(
-                        animationType: "SLIDE",
-                        duration: const Duration(milliseconds: 400),
-                        begin: const Offset(-1, 0),
+                        animationType: "SCALE",
+                        duration: const Duration(milliseconds: 500),
                         child: Container(
                           height: 56,
                           width: MediaQuery.of(context).size.width,

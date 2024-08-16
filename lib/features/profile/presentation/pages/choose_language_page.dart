@@ -1,5 +1,6 @@
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
 import 'package:demo_speed_zones/features/profile/presentation/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -54,7 +55,6 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
       ),
       body: Column(
         children: [
-          const SizedBox(height: 81),
           ListView.builder(
             itemCount: languageController.languageList.length,
             shrinkWrap: true,
@@ -62,66 +62,77 @@ class _ChooseLanguageScreenState extends State<ChooseLanguageScreen> {
             scrollDirection: Axis.vertical,
             itemBuilder: (context, index) {
               final languageData = languageController.languageList[index];
-              return Container(
-                height: 56,
-                width: MediaQuery.of(context).size.width,
-                margin: const EdgeInsets.only(top: 24, left: 24, right: 24),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  color: ColorConstant.lightGreyColor,
-                ),
-                child: ListTile(
-                  leading: Image.asset(
-                    languageData.image,
-                    height: 18,
-                    width: 24,
-                    filterQuality: FilterQuality.high,
-                  ),
-                  titleAlignment: ListTileTitleAlignment.center,
-                  trailing: GestureDetector(
-                    onTap: () {
-                      languageController.selectedLanguage.value = index;
-                    },
-                    child: Obx(() {
-                      return Container(
-                        height: 24,
-                        width: 24,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color:
-                              languageController.selectedLanguage.value == index
-                                  ? ColorConstant.primaryColor
-                                  : Colors.transparent,
-                          border:
-                              languageController.selectedLanguage.value == index
-                                  ? null
-                                  : Border.all(
-                                      color: ColorConstant.secondaryColor,
-                                      width: 1,
-                                      style: BorderStyle.solid,
-                                    ),
-                        ),
-                        child:
+              return AnimationWidget(
+                animationType: "FADE",
+                child: GestureDetector(
+                  onTap: () =>
+                      languageController.selectedLanguage.value = index,
+                  child: Obx(() {
+                    return Container(
+                      height: 56,
+                      width: MediaQuery.of(context).size.width,
+                      margin:
+                          const EdgeInsets.only(top: 24, left: 24, right: 24),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        color: ColorConstant.lightGreyColor,
+                        border:
                             languageController.selectedLanguage.value == index
-                                ? const Center(
-                                    child: Icon(
-                                      Icons.check,
-                                      size: 18,
-                                      color: ColorConstant.whiteColor,
-                                    ),
+                                ? Border.all(
+                                    color: ColorConstant.secondaryColor,
+                                    width: 1,
+                                    style: BorderStyle.solid,
                                   )
                                 : null,
-                      );
-                    }),
-                  ),
-                  title: Text(
-                    languageData.title,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                      color: ColorConstant.blackTextColor,
-                    ),
-                  ),
+                      ),
+                      child: ListTile(
+                        leading: Image.asset(
+                          languageData.image,
+                          height: 18,
+                          width: 24,
+                          filterQuality: FilterQuality.high,
+                        ),
+                        titleAlignment: ListTileTitleAlignment.center,
+                        trailing: Container(
+                          height: 24,
+                          width: 24,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: languageController.selectedLanguage.value ==
+                                    index
+                                ? ColorConstant.primaryColor
+                                : Colors.transparent,
+                            border: languageController.selectedLanguage.value ==
+                                    index
+                                ? null
+                                : Border.all(
+                                    color: ColorConstant.secondaryColor,
+                                    width: 1,
+                                    style: BorderStyle.solid,
+                                  ),
+                          ),
+                          child:
+                              languageController.selectedLanguage.value == index
+                                  ? const Center(
+                                      child: Icon(
+                                        Icons.check,
+                                        size: 18,
+                                        color: ColorConstant.whiteColor,
+                                      ),
+                                    )
+                                  : null,
+                        ),
+                        title: Text(
+                          languageData.title,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: ColorConstant.blackTextColor,
+                          ),
+                        ),
+                      ),
+                    );
+                  }),
                 ),
               );
             },

@@ -92,24 +92,27 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                             6)) {
                 } else {
                   if (authController.newPasswordController.text.isEmpty) {
-                    showMessageSnackBar('New Password field is required!');
+                    showMessageSnackBar(
+                        StringConstant.newPasswordFieldIsRequired);
                   } else if (authController
                       .confirmPasswordController.text.isEmpty) {
-                    showMessageSnackBar('Confirm Password field is required!');
+                    showMessageSnackBar(
+                        StringConstant.confirmPasswordFieldIsRequired);
                   } else if (authController.confirmPasswordController.text !=
                       authController.newPasswordController.text) {
-                    showMessageSnackBar('Confirm Password does not match.');
+                    showMessageSnackBar(
+                        StringConstant.confirmPasswordDoesNotMatch);
                   } else if (authController
                               .confirmPasswordController.text.length <=
                           6 ||
                       authController.newPasswordController.text.length <= 6) {
                     showMessageSnackBar(
-                        'Password must be longer than 6 character');
+                        StringConstant.passwordMustBeLongerThan6Characters);
                   } else if (!passwordRegex.hasMatch(
                           authController.newPasswordController.text) ||
                       !passwordRegex.hasMatch(
                           authController.confirmPasswordController.text)) {
-                    showMessageSnackBar('Weak Password');
+                    showMessageSnackBar(StringConstant.weakPassword);
                   }
                 }
               },
