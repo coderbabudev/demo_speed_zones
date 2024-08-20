@@ -3,6 +3,7 @@ class UserDetails {
   final String? name;
   final String? email;
   final String? phone;
+  final String? countryFlag;
   final String? countryCode;
   final String? photoUrl;
   final String? location;
@@ -17,6 +18,7 @@ class UserDetails {
     this.name,
     this.email,
     this.phone,
+    this.countryFlag,
     this.countryCode,
     this.photoUrl,
     this.location,
@@ -33,6 +35,7 @@ class UserDetails {
       name: json['name'] ?? '',
       email: json['email'] ?? '',
       phone: json['phone'] ?? '',
+      countryFlag: json['country_flag'] ?? '',
       countryCode: json['country_code'] ?? '',
       photoUrl: json['image_url'] ?? "",
       location: json['location'] ?? '',
@@ -49,6 +52,7 @@ class UserDetails {
         'name': name,
         'email': email,
         'phone': phone,
+        'country_flag': countryFlag,
         'country_code': countryCode,
         'image_url': photoUrl,
         'location': location,

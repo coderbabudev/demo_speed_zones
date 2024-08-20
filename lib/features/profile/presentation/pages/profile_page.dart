@@ -1,12 +1,15 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
 import 'package:demo_speed_zones/core/utils/util.dart';
 import 'package:demo_speed_zones/features/profile/presentation/controller/profile_controller.dart';
 import 'package:demo_speed_zones/features/profile/presentation/pages/change_password_page.dart';
 import 'package:demo_speed_zones/features/profile/presentation/pages/choose_language_page.dart';
 import 'package:demo_speed_zones/features/profile/presentation/pages/circle_management_page.dart';
 import 'package:demo_speed_zones/features/profile/presentation/pages/edit_profile_page.dart';
+import 'package:demo_speed_zones/features/profile/presentation/pages/privacy_policy_page.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -70,35 +73,59 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Row(
                 children: [
-                  Container(
-                    height: 40,
-                    width: 40,
-                    margin: const EdgeInsets.symmetric(horizontal: 16),
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: ColorConstant.whiteColor,
-                    ),
-                  ),
+                  Obx(() {
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(100),
+                        child: profileController.userImage.value.isEmpty
+                            ? Image.asset(
+                                ImageConstant.dummyUser,
+                                filterQuality: FilterQuality.high,
+                                fit: BoxFit.cover,
+                                height: 50,
+                                width: 50,
+                              )
+                            : AnimationWidget(
+                                animationType: "FADE",
+                                child: CachedNetworkImage(
+                                  imageUrl: profileController.userImage.value,
+                                  filterQuality: FilterQuality.high,
+                                  height: 50,
+                                  width: 50,
+                                  placeholder: (context, state) => const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                      ),
+                    );
+                  }),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
-                        'Daniel Lawson',
-                        style: TextStyle(
-                          color: ColorConstant.whiteColor,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      Text(
-                        '+01 283 835 2999',
-                        style: TextStyle(
-                          color: ColorConstant.whiteColor.withOpacity(0.5),
-                          fontSize: 12,
-                          height: 1.5,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      Obx(() {
+                        return Text(
+                          profileController.userName.value,
+                          style: const TextStyle(
+                            color: ColorConstant.whiteColor,
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      }),
+                      Obx(() {
+                        return Text(
+                          profileController.userPhoneNumber.value,
+                          style: TextStyle(
+                            color: ColorConstant.whiteColor.withOpacity(0.5),
+                            fontSize: 13,
+                            height: 1.5,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        );
+                      }),
                     ],
                   )
                 ],
@@ -188,6 +215,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   } else if (index == 1) {
                   } else if (index == 2) {
                   } else if (index == 3) {
+                    Get.to(() => const PrivacyPolicyPage());
                   } else if (index == 4) {
                   } else if (index == 5) {}
                 },

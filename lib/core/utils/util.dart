@@ -158,6 +158,7 @@ logoutBottomSheet() {
 }
 
 String currentDate = DateFormat('yyyy MMMM dd, hh:mm a').format(DateTime.now());
+String updateDate = DateFormat('yyyy MMMM dd, hh:mm a').format(DateTime.now());
 
 // showCongratulationDialog(BuildContext context, AnimationController controller) {
 //   showDialog(

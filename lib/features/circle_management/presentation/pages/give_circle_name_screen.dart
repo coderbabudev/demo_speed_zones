@@ -8,7 +8,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class GiveCircleNameScreen extends StatefulWidget {
-  const GiveCircleNameScreen({super.key});
+  const GiveCircleNameScreen({
+    super.key,
+    this.whichFrom,
+  });
+
+  final String? whichFrom;
 
   @override
   State<GiveCircleNameScreen> createState() => _GiveCircleNameScreenState();
@@ -46,7 +51,7 @@ class _GiveCircleNameScreenState extends State<GiveCircleNameScreen> {
                 fillColor: ColorConstant.whiteColor,
                 isDense: true,
                 filled: true,
-                hintText: 'Circle name',
+                hintText: StringConstant.circleName,
                 hintStyle: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w500,
@@ -83,6 +88,7 @@ class _GiveCircleNameScreenState extends State<GiveCircleNameScreen> {
                 if (circleController.circleNameController.text.isNotEmpty) {
                   Get.to(() => ShareInviteCodeScreen(
                         circleName: circleController.circleNameController.text,
+                        whichFrom: widget.whichFrom ?? '',
                       ));
                 } else {
                   if (circleController.circleNameController.text.isEmpty) {

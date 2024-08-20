@@ -10,7 +10,9 @@ import 'package:get/get.dart';
 import 'package:pinput/pinput.dart';
 
 class JoinCircleInviteCodeScreen extends StatefulWidget {
-  const JoinCircleInviteCodeScreen({super.key});
+  const JoinCircleInviteCodeScreen({super.key, this.whichFrom});
+
+  final String? whichFrom;
 
   @override
   State<JoinCircleInviteCodeScreen> createState() =>
@@ -78,14 +80,19 @@ class _JoinCircleInviteCodeScreenState
                     ),
                     Obx(() {
                       return ElevatedButton(
-                        onPressed: inviteController.isAllFieldsFilled.value
-                            ? () async {
-                                final inviteCode =
-                                    inviteController.inviteCodeController.text;
-                                await inviteController.onSubmitCode(inviteCode);
-                              }
-                            : () => showMessageSnackBar(
-                                StringConstant.enterYourInviteCode),
+                        onPressed: () async {
+                          if (inviteController.isAllFieldsFilled.value) {
+                            inviteController.isLoading.value = true;
+                            final inviteCode =
+                                inviteController.inviteCodeController.text;
+                            await inviteController
+                                .onSubmitCode(
+                                    inviteCode, widget.whichFrom ?? '')
+                                .then((value) {
+                              inviteController.isLoading.value = false;
+                            });
+                          }
+                        },
                         style: ElevatedButton.styleFrom(
                           fixedSize: const Size(double.infinity, 56),
                           maximumSize: const Size(double.infinity, 56),

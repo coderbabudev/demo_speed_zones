@@ -82,15 +82,15 @@ class _AddNewMemberPageState extends State<AddNewMemberPage> {
                           itemCount: profileController.circleMembersList.length,
                           shrinkWrap: true,
                           physics: const BouncingScrollPhysics(),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 30,
-                            vertical: 30,
+                          padding: const EdgeInsets.only(
+                            left: 30,
+                            right: 30,
+                            top: 15,
                           ),
                           itemBuilder: (context, index) {
                             final member =
                                 profileController.circleMembersList[index];
-                            final bool isOwner =
-                                member['circle_admin_uid'] ?? false;
+                            final bool isOwner = member['circle_admin_uid'];
                             return Container(
                               padding:
                                   const EdgeInsets.only(bottom: 15, top: 15),
@@ -150,9 +150,9 @@ class _AddNewMemberPageState extends State<AddNewMemberPage> {
                                             color: ColorConstant.blackTextColor,
                                           ),
                                         ),
-                                        const Text(
-                                          "Since 7:36 pm yesterday",
-                                          style: TextStyle(
+                                        Text(
+                                          member['created_at'],
+                                          style: const TextStyle(
                                             fontWeight: FontWeight.w400,
                                             fontSize: 12,
                                             color: ColorConstant.blackTextColor,
@@ -162,18 +162,28 @@ class _AddNewMemberPageState extends State<AddNewMemberPage> {
                                     ),
                                   ),
                                   if (!isOwner) ...[
-                                    Image.asset(
-                                      IconConstant.bookmark,
-                                      height: 24,
-                                      width: 24,
-                                      filterQuality: FilterQuality.high,
+                                    GestureDetector(
+                                      onTap: () {},
+                                      child: Image.asset(
+                                        IconConstant.bookmark,
+                                        height: 24,
+                                        width: 24,
+                                        filterQuality: FilterQuality.high,
+                                      ),
                                     ),
                                     const SizedBox(width: 20),
-                                    Image.asset(
-                                      IconConstant.delete,
-                                      height: 24,
-                                      width: 24,
-                                      filterQuality: FilterQuality.high,
+                                    GestureDetector(
+                                      onTap: () async {
+                                        await profileController
+                                            .deleteCircleMember(
+                                                index, widget.circleId);
+                                      },
+                                      child: Image.asset(
+                                        IconConstant.delete,
+                                        height: 24,
+                                        width: 24,
+                                        filterQuality: FilterQuality.high,
+                                      ),
                                     ),
                                   ]
                                 ],

@@ -405,6 +405,8 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
                                       onCountryChanged: (Country country) {
                                         authController.countryCode.value =
                                             country.dialCode;
+                                        authController.countryFlag.value =
+                                            country.flag;
                                       },
                                       keyboardType: TextInputType.number,
                                     ).paddingOnly(left: 20, right: 20),

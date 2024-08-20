@@ -21,8 +21,8 @@ class ProfileController extends GetxController {
   var imageFile = Rxn<File>();
   RxBool showNewPassword = false.obs;
   RxBool isLoading = false.obs;
-  RxString countryCode = '91'.obs;
-  RxString initialCountryCode = 'IN'.obs;
+  RxString countryCode = ''.obs;
+  RxString countryFlag = ''.obs;
   List<Map<String, dynamic>> circleMembersList = [];
   RxBool showOldPassword = false.obs;
   RxBool showConfirmPassword = false.obs;
@@ -36,6 +36,10 @@ class ProfileController extends GetxController {
   RxString confirmPassword = ''.obs;
   RxString oldPassword = ''.obs;
   RxString newPassword = ''.obs;
+  RxString userName = ''.obs;
+  RxString userEmail = ''.obs;
+  RxString userPhoneNumber = ''.obs;
+  RxString userImage = ''.obs;
 
   @override
   void onInit() {
@@ -138,16 +142,26 @@ class ProfileController extends GetxController {
     try {
       Map<String, dynamic> updates = {};
       if (imageFile.value != null) {
-        String imageUrl = await uploadImageToFirebase(imageFile.value!);
-        updates['image_url'] = imageUrl; // Add new image URL to updates
+        Reference storageRef = FirebaseStorage.instance.ref().child(
+            'images/${auth.currentUser?.uid}/${imageFile.value!.path.split('/').last}');
+
+        UploadTask uploadTask = storageRef.putFile(imageFile.value!);
+        TaskSnapshot snapshot = await uploadTask;
+
+        String imageUrl = await snapshot.ref.getDownloadURL();
+        updates['image_url'] = imageUrl;
       }
 
       String phoneNumber = phoneNumberController.text.trim();
-      if (phoneNumber.isNotEmpty) {
+      if (phoneNumber.isNotEmpty ||
+          countryFlag.isNotEmpty ||
+          countryCode.isNotEmpty) {
         updates['phone'] = phoneNumber;
-        updates['country_code'] = countryCode.value;
+        updates['country_flag'] = countryFlag.value;
+        updates['country_code'] = '+${countryCode.value}';
       }
       if (updates.isNotEmpty) {
+        updates['updated_at'] = updateDate;
         await FirebaseFirestore.instance
             .collection('users')
             .doc(auth.currentUser?.uid)
@@ -155,7 +169,7 @@ class ProfileController extends GetxController {
       }
       isLoading.value = false;
       showMessageSnackBar(
-          bgColor: Colors.green, 'Profile updated successfully');
+          bgColor: Colors.green, StringConstant.profileUpdatedSuccessfully);
     } catch (e) {
       isLoading.value = false;
       debugPrint('${StringConstant.failedToUploadImage}$e');
@@ -164,17 +178,7 @@ class ProfileController extends GetxController {
     }
   }
 
-  Future<String> uploadImageToFirebase(File imageFile) async {
-    Reference storageRef = FirebaseStorage.instance.ref().child(
-        'images/${auth.currentUser?.uid}/${imageFile.path.split('/').last}');
-
-    UploadTask uploadTask = storageRef.putFile(imageFile);
-    TaskSnapshot snapshot = await uploadTask;
-
-    return await snapshot.ref.getDownloadURL();
-  }
-
-  Future<Map<String, dynamic>?> fetchUserDetails() async {
+  Future<dynamic> fetchUserDetails() async {
     try {
       User? currentUser = auth.currentUser;
       if (currentUser == null) {
@@ -184,27 +188,42 @@ class ProfileController extends GetxController {
           await firestore.collection('users').doc(currentUser.uid).get();
 
       if (userSnapshot.exists) {
-        return userSnapshot.data() as Map<String, dynamic>;
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+        final phoneNumber = userData['phone'].toString();
+        userName.value = userData['name'] ?? '';
+        userEmail.value = userData['email'] ?? '';
+        userImage.value = userData['image_url'] ?? '';
+        countryFlag.value = userData['country_flag'] ?? '';
+        countryCode.value = userData['country_code'] ?? '';
+        phoneNumberController.text = userData['phone'] ?? '';
+        if (phoneNumber.length >= 10) {
+          userPhoneNumber.value =
+              '${userData['country_code']} ${phoneNumber.substring(0, 3)} ${phoneNumber.substring(3, 6)} ${phoneNumber.substring(6)}';
+        }
+        update();
       } else {
         return null;
       }
     } catch (e) {
-      print('Error fetching user details: $e');
+      print('${StringConstant.errorFetchingUserDetails}$e');
       return null;
     }
+    update();
   }
 
-  Future<void> fetchCircleMembers(circleId) async {
+  Future<void> fetchCircleMembers(String circleId) async {
     isLoading.value = true;
     try {
       circleMembersList.clear();
+
       DocumentSnapshot circleSnapshot =
           await firestore.collection('circles').doc(circleId).get();
 
       if (circleSnapshot.exists) {
         List<dynamic> members = circleSnapshot['circle_members'];
-        String ownerId = circleSnapshot[
-            'circle_admin_uid']; // Assuming you have an owner_id field
+        String ownerId = circleSnapshot['circle_admin_uid'];
+
+        List<Map<String, dynamic>> tempMembersList = [];
 
         for (String userId in members) {
           DocumentSnapshot userSnapshot =
@@ -216,65 +235,61 @@ class ProfileController extends GetxController {
 
             userData['circle_admin_uid'] = userId == ownerId;
 
-            if (userId == ownerId) {
-              circleMembersList.insert(
-                  0, userData); // Insert owner at the start
-            } else {
-              circleMembersList.add(userData); // Add other members normally
-            }
+            tempMembersList.add(userData);
           }
         }
+        Map<String, dynamic>? ownerData;
+        tempMembersList.removeWhere((member) {
+          if (member['circle_admin_uid'] == true) {
+            ownerData = member;
+            return true;
+          }
+          return false;
+        });
+
+        if (ownerData != null) {
+          circleMembersList.insert(0, ownerData!);
+        }
+        circleMembersList.addAll(tempMembersList);
+
         isLoading.value = false;
         update();
       }
     } catch (e) {
       isLoading.value = false;
-      print('Error fetching members: $e');
+      print('${StringConstant.errorFetchingMembers}$e');
     }
   }
 
-  /*Future<void> fetchCircleMembers(circleId) async {
+  Future<void> deleteCircleMember(int index, circleId) async {
     isLoading.value = true;
     try {
-      circleMembersList.clear();
-      DocumentSnapshot circleSnapshot =
-          await firestore.collection('circles').doc(circleId).get();
-
-      if (circleSnapshot.exists) {
-        List<dynamic> members = circleSnapshot['circle_members'];
-
-        for (String userId in members) {
-          DocumentSnapshot userSnapshot =
-              await firestore.collection('users').doc(userId).get();
-
-          if (userSnapshot.exists) {
-            Map<String, dynamic> userData =
-                userSnapshot.data() as Map<String, dynamic>;
-            circleMembersList.add(userData);
-          }
-        }
-        isLoading.value = false;
-        update();
-      }
-    } catch (e) {
+      circleMembersList.removeAt(index);
+      final docRef = firestore.collection('circles').doc(circleId);
+      final docSnap = await docRef.get();
+      List queue = docSnap.get('circle_members');
+      docRef.update({
+        "circle_members": FieldValue.arrayRemove([queue[index]])
+      });
       isLoading.value = false;
-      print('Error fetching members: $e');
+    } catch (e) {
+      showMessageSnackBar(e.toString());
     }
-  }*/
+  }
 
   generateMainFeature() {
     mainFeature.addAll([
       SettingFeature(
         image: IconConstant.editProfile,
-        title: 'Edit Profile',
+        title: StringConstant.editProfile,
       ),
       SettingFeature(
         image: IconConstant.security,
-        title: 'Change Password',
+        title: StringConstant.changePassword,
       ),
       SettingFeature(
         image: IconConstant.circleManagement,
-        title: 'Circle Management',
+        title: StringConstant.circleManagement,
       ),
     ]);
     update();
@@ -284,27 +299,27 @@ class ProfileController extends GetxController {
     otherFeature.addAll([
       SettingFeature(
         image: IconConstant.language,
-        title: 'Languages',
+        title: StringConstant.languages,
       ),
       SettingFeature(
         image: IconConstant.faq,
-        title: 'FAQ',
+        title: StringConstant.fAQ,
       ),
       SettingFeature(
         image: IconConstant.termsAndCondition,
-        title: 'Terms of service',
+        title: StringConstant.termsOfService,
       ),
       SettingFeature(
         image: IconConstant.privacyPolicy,
-        title: 'Privacy Policy',
+        title: StringConstant.privacyPolicy,
       ),
       SettingFeature(
         image: IconConstant.zendeskHelp,
-        title: 'Zendesk help',
+        title: StringConstant.zendeskHelp,
       ),
       SettingFeature(
         image: IconConstant.smartNotify,
-        title: 'Smart Notifications',
+        title: StringConstant.smartNotifications,
       ),
     ]);
     update();
@@ -312,11 +327,12 @@ class ProfileController extends GetxController {
 
   showAllLanguages() {
     languageList.addAll([
-      Languages(image: IconConstant.englishLng, title: 'English'),
-      Languages(image: IconConstant.indonesianLng, title: 'Indonesia'),
-      Languages(image: IconConstant.germanyLng, title: 'Deutsch'),
-      Languages(image: IconConstant.franceLng, title: 'French'),
-      Languages(image: IconConstant.spainLng, title: 'Spanish'),
+      Languages(image: IconConstant.englishLng, title: StringConstant.english),
+      Languages(
+          image: IconConstant.indonesianLng, title: StringConstant.indonesia),
+      Languages(image: IconConstant.germanyLng, title: StringConstant.deutsch),
+      Languages(image: IconConstant.franceLng, title: StringConstant.french),
+      Languages(image: IconConstant.spainLng, title: StringConstant.spanish),
     ]);
   }
 

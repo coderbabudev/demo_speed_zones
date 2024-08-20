@@ -1,3 +1,4 @@
+import 'package:demo_speed_zones/core/constants/string_constants.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
         child: const Center(
-          child: Text("Welcome Speed & Zones App"),
+          child: Text(StringConstant.welcomeSpeedZonesApp),
         ),
       );
 }

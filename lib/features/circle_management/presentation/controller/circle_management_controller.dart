@@ -10,9 +10,11 @@ import 'package:demo_speed_zones/features/circle_management/presentation/pages/d
 import 'package:demo_speed_zones/features/circle_management/presentation/pages/notification_premission_request_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
+
+import '../../../profile/presentation/pages/circle_management_page.dart';
 
 class CircleManagementController extends GetxController {
   RxnInt selectedRole = RxnInt();
@@ -62,7 +64,7 @@ class CircleManagementController extends GetxController {
     update();
   }
 
-  Future<void> createCircleGroup(String circleName) async {
+  Future<void> createCircleGroup(String circleName, String whichFrom) async {
     Circle circleData = Circle(
       circleName: circleName.toString(),
       circleInviteCode: inviteCode.value,
@@ -73,7 +75,13 @@ class CircleManagementController extends GetxController {
       await db.createCircle(circleData);
       circleNameController.clear();
       isLoading.value = false;
-      Get.to(() => const DescribeRoleInCircleScreen());
+      showMessageSnackBar(StringConstant.circleCreatedSuccessfully,
+          bgColor: Colors.green);
+      if (whichFrom.isEmpty) {
+        Get.to(() => const DescribeRoleInCircleScreen());
+      } else {
+        Get.off(() => const CircleManagementScreen());
+      }
     } catch (e) {
       isLoading.value = false;
       showMessageSnackBar(e.toString());
@@ -104,8 +112,7 @@ class CircleManagementController extends GetxController {
     }
   }
 
-  Future<void> onSubmitCode(String inviteCode) async {
-    isLoading.value = true;
+  Future<void> onSubmitCode(String inviteCode, String whichFrom) async {
     try {
       final circleDoc = await FirebaseFirestore.instance
           .collection('circles')
@@ -123,12 +130,15 @@ class CircleManagementController extends GetxController {
               .collection('circles')
               .doc(inviteCode)
               .update({'circle_members': circleMembers});
-          Get.to(() =>
-              const DescribeRoleInCircleScreen()); // Navigate to another screen
+          if (whichFrom.isEmpty) {
+            Get.to(() =>
+                const DescribeRoleInCircleScreen()); // Navigate to another screen
+          } else {
+            Get.off(() => const CircleManagementScreen());
+          }
         } else {
           showMessageSnackBar(StringConstant.userIsAlreadyPartOfThisCircle);
         }
-        isLoading.value = false;
       } else {
         isLoading.value = false;
         showMessageSnackBar(StringConstant.invalidInviteCode);

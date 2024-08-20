@@ -6,7 +6,7 @@ class Circle {
   final String? updatedAt;
   final bool isDeleted;
   final bool isEnabled;
-  final List<int>? circleMembers;
+  final List<String>? circleMembers;
 
   Circle({
     this.circleName,
@@ -28,7 +28,7 @@ class Circle {
       isEnabled: json['is_enabled'] ?? false,
       createdAt: json['created_at'] ?? '',
       updatedAt: json['updated_at'] ?? '',
-      circleMembers: List<int>.from(json['circle_members']),
+      circleMembers: List<String>.from(json['circle_members']),
     );
   }
 

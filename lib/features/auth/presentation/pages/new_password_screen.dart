@@ -20,17 +20,38 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    const passwordPattern =
-        r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$&*~]).{6,}$';
-
-    final passwordRegex = RegExp(passwordPattern);
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
+      appBar: AppBar(
+        leading: GestureDetector(
+          onTap: () => Get.back(),
+          child: Center(
+            child: Container(
+              height: 40,
+              width: 40,
+              margin: const EdgeInsets.only(left: 20, top: 20),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: ColorConstant.secondaryColor,
+                ),
+              ),
+              child: const Icon(
+                Icons.arrow_back_rounded,
+                size: 20,
+                color: ColorConstant.blackColor,
+              ),
+            ),
+          ),
+        ),
+        titleSpacing: 35,
+        automaticallyImplyLeading: false,
+        elevation: 0,
+      ),
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            backButton(onTap: () => Get.back()),
             const Text(
               StringConstant.newPassword,
               style: TextStyle(
@@ -47,6 +68,17 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                 color: ColorConstant.secondaryColor,
               ),
             ).paddingOnly(top: 17),
+            Obx(() => AuthTextField(
+                  controller: authController.oldPasswordController,
+                  hintText: StringConstant.oldPassword,
+                  suffixIcon: authController.showOldPassword.value
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
+                  prefixIcon: IconConstant.enablePassword,
+                  suffixOnPress: () => authController.showHideOLDPassword(),
+                  obscureText:
+                      authController.showOldPassword.value ? false : true,
+                ).paddingOnly(top: 48)),
             Obx(() {
               return AuthTextField(
                 controller: authController.newPasswordController,
@@ -60,7 +92,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                 obscureText:
                     authController.showNewPassword.value ? false : true,
               );
-            }).paddingOnly(top: 48),
+            }).paddingOnly(top: 32),
             Obx(() {
               return AuthTextField(
                 controller: authController.confirmPasswordController,
@@ -78,44 +110,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
             const Spacer(),
             AuthenticateButton(
               name: StringConstant.resetPassword,
-              onPress: () {
-                if (authController.newPasswordController.text.isNotEmpty &&
-                    authController.confirmPasswordController.text.isNotEmpty &&
-                    passwordRegex
-                        .hasMatch(authController.newPasswordController.text) &&
-                    passwordRegex.hasMatch(
-                        authController.confirmPasswordController.text) &&
-                    (authController.confirmPasswordController.text ==
-                        authController.newPasswordController.text) &&
-                    (authController.newPasswordController.text.length > 6 ||
-                        authController.confirmPasswordController.text.length >
-                            6)) {
-                } else {
-                  if (authController.newPasswordController.text.isEmpty) {
-                    showMessageSnackBar(
-                        StringConstant.newPasswordFieldIsRequired);
-                  } else if (authController
-                      .confirmPasswordController.text.isEmpty) {
-                    showMessageSnackBar(
-                        StringConstant.confirmPasswordFieldIsRequired);
-                  } else if (authController.confirmPasswordController.text !=
-                      authController.newPasswordController.text) {
-                    showMessageSnackBar(
-                        StringConstant.confirmPasswordDoesNotMatch);
-                  } else if (authController
-                              .confirmPasswordController.text.length <=
-                          6 ||
-                      authController.newPasswordController.text.length <= 6) {
-                    showMessageSnackBar(
-                        StringConstant.passwordMustBeLongerThan6Characters);
-                  } else if (!passwordRegex.hasMatch(
-                          authController.newPasswordController.text) ||
-                      !passwordRegex.hasMatch(
-                          authController.confirmPasswordController.text)) {
-                    showMessageSnackBar(StringConstant.weakPassword);
-                  }
-                }
-              },
+              onPress: () => authController.resetPassword(),
               image: '',
               color: ColorConstant.primaryColor,
               textColor: ColorConstant.whiteColor,

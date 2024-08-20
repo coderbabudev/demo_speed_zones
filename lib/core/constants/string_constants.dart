@@ -1,6 +1,7 @@
 class StringConstant {
   static const splashText = "The world’s leading family\nsafety service.";
   static const appText = "Speed & Zones";
+  static const welcomeSpeedZonesApp = "Welcome Speed & Zones App";
   static const letsGetStarted = "Let’s Get Started";
   static const instantSignUp = "Or use instant sign up";
   static const signUpEmail = "Sign Up With Email";
@@ -20,7 +21,9 @@ class StringConstant {
   static const enterAValidEmailAddress = "Enter a valid email address";
   static const passwordMustBeLongerThan6Characters =
       "Password must be longer than 6 characters.";
-
+  static const profileUpdatedSuccessfully = 'Profile updated successfully';
+  static const errorFetchingUserDetails = 'Error fetching user details: ';
+  static const errorFetchingMembers = 'Error fetching members: ';
   static const alreadyHaveAccount = "Already Have an Account? ";
   static const logIn = "Login";
   static const loginSuccessfully = "Login Successfully";
@@ -100,6 +103,9 @@ class StringConstant {
   static const congratulationSubText =
       'Your account is ready to use. You will be redirected to the Home page in o few seconds.';
   static const profile = 'Profile';
+  static const privacyPolicy = 'Privacy Policy';
+  static const smartNotifications = 'Smart Notifications';
+  static const zendeskHelp = 'Zendesk help';
   static const editProfile = 'Edit Profile';
   static const accountSetting = 'Account Settings';
   static const other = 'Other';
@@ -108,6 +114,9 @@ class StringConstant {
   static const logoutConfirmText = 'Are you sure you want  to log out?';
   static const editProfileSubText = 'You can always change it later';
   static const changePassword = 'Change Password';
+  static const languages = 'Languages';
+  static const fAQ = 'FAQ';
+  static const termsOfService = 'Terms of service';
   static const changePasswordSubText = 'Create your new password to Login';
   static const circleManagement = 'Circle Management';
   static const addNewMember = 'Add a new Member';
@@ -124,9 +133,18 @@ class StringConstant {
   static const enterYourInviteCode = 'Enter your invite code';
   static const locationPermissionIsDenied = 'Location permission is Denied';
   static const oldPasswordWasIncorrect = 'Old password was incorrect';
+  static const circleCreatedSuccessfully = 'Circle created successfully';
+  static const circleName = 'Circle name';
   static const pleaseLogInAgainToUpdateYourPassword =
       'Please log in again to update your password';
   static const noUserIsCurrentlyLoggedIn = 'No user is currently logged in';
   static const userIsAlreadyPartOfThisCircle =
       'User is already part of this circle.';
+  static const english = 'English';
+  static const indonesia = 'Indonesia';
+  static const deutsch = 'Deutsch';
+  static const french = 'French';
+  static const spanish = 'Spanish';
+  static const somethingWentWrong = 'Something went wrong';
+  static const noCirclesAvailable = 'No circles available';
 }

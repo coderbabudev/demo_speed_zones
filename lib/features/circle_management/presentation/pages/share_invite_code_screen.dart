@@ -7,9 +7,14 @@ import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ShareInviteCodeScreen extends StatefulWidget {
-  const ShareInviteCodeScreen({super.key, required this.circleName});
+  const ShareInviteCodeScreen({
+    super.key,
+    required this.circleName,
+    required this.whichFrom,
+  });
 
   final String circleName;
+  final String whichFrom;
 
   @override
   State<ShareInviteCodeScreen> createState() => _ShareInviteCodeScreenState();
@@ -77,8 +82,12 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
             ).paddingOnly(top: 50, bottom: 20, left: 24, right: 24),
             Obx(() {
               return ElevatedButton(
-                onPressed: () async =>
-                    await circleController.createCircleGroup(widget.circleName),
+                onPressed: () async {
+                  await circleController.createCircleGroup(
+                    widget.circleName,
+                    widget.whichFrom,
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                     fixedSize: const Size(double.infinity, 56),
                     maximumSize: const Size(double.infinity, 56),

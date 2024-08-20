@@ -23,10 +23,12 @@ class AuthController extends GetxController {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final forgetEmailController = TextEditingController();
+  final oldPasswordController = TextEditingController();
   UserDetails userDetails = const UserDetails();
 
   RxBool lgnShowPassword = false.obs;
   RxBool regShowPassword = false.obs;
+  RxBool showOldPassword = false.obs;
   RxBool showNewPassword = false.obs;
   RxBool showConfirmPassword = false.obs;
 
@@ -38,7 +40,11 @@ class AuthController extends GetxController {
   RxBool isLoading = false.obs;
   RxString verificationId = ''.obs;
   RxString countryCode = '91'.obs;
+  RxString countryFlag = 'IN'.obs;
   RxBool isPhoneVerified = false.obs;
+  RxString confirmPassword = ''.obs;
+  RxString oldPassword = ''.obs;
+  RxString newPassword = ''.obs;
   final db = DatabaseMethod();
   FirebaseAuth auth = FirebaseAuth.instance;
   FirebaseFirestore firebaseDb = FirebaseFirestore.instance;
@@ -100,6 +106,11 @@ class AuthController extends GetxController {
     update();
   }
 
+  showHideOLDPassword() {
+    showOldPassword.value = !showOldPassword.value;
+    update();
+  }
+
   showHideNewPassword() {
     showNewPassword.value = !showNewPassword.value;
     update();
@@ -107,11 +118,6 @@ class AuthController extends GetxController {
 
   showHideConfirmPassword() {
     showConfirmPassword.value = !showConfirmPassword.value;
-    update();
-  }
-
-  void setLoading(bool value) {
-    isLoading.value = value;
     update();
   }
 
@@ -123,7 +129,7 @@ class AuthController extends GetxController {
         lgnPasswordController.text.isNotEmpty &&
         lgnPasswordController.text.length > 6 &&
         regex.hasMatch(lgnEmailController.text)) {
-      setLoading(true);
+      isLoading.value = true;
       try {
         final credential = await auth.signInWithEmailAndPassword(
           email: lgnEmailController.text.trim(),
@@ -156,9 +162,9 @@ class AuthController extends GetxController {
       } catch (e) {
         showMessageSnackBar('${StringConstant.anErrorOccurred}$e');
       }
-      setLoading(false);
+      isLoading.value = false;
     } else {
-      setLoading(false);
+      isLoading.value = false;
       if (lgnEmailController.text.isEmpty) {
         showMessageSnackBar(StringConstant.emailFieldIsRequired);
       } else if (lgnPasswordController.text.isEmpty) {
@@ -209,8 +215,9 @@ class AuthController extends GetxController {
     UserDetails userDetails = UserDetails(
       name: regNameController.text.trim(),
       email: regEmailController.text.trim(),
+      countryCode: '+${countryCode.value}',
       phone: regMobileNumberController.text.toString(),
-      countryCode: '+$countryCode',
+      countryFlag: countryFlag.value,
       createdAt: formattedDate,
     );
     if (regMobileNumberController.text.isNotEmpty &&
@@ -250,7 +257,7 @@ class AuthController extends GetxController {
 
   Future<void> verifyOTP(String verificationId, UserDetails userInfo) async {
     if (regOtpController.text.isNotEmpty && regOtpController.text.length == 6) {
-      setLoading(true);
+      isLoading.value = true;
       try {
         PhoneAuthCredential phoneCredential = PhoneAuthProvider.credential(
           verificationId: verificationId,
@@ -275,7 +282,7 @@ class AuthController extends GetxController {
           location: userInfo.location,
           createdAt: userInfo.createdAt,
           updatedAt: userInfo.updatedAt,
-          countryCode: userInfo.countryCode,
+          countryFlag: userInfo.countryFlag,
           isEnable: userInfo.isEnable,
           isDeleted: userInfo.isDeleted,
         );
@@ -298,14 +305,82 @@ class AuthController extends GetxController {
         showMessageSnackBar(e.code);
         // showMessageSnackBar('Failed to verify OTP. Please try again.');
       }
-      setLoading(false);
+      isLoading.value = false;
     } else {
-      setLoading(false);
+      isLoading.value = false;
       if (regOtpController.text.isEmpty) {
         showMessageSnackBar(StringConstant.oTPFieldIsRequired);
       } else if (regOtpController.text.length != 6) {
         showMessageSnackBar(StringConstant.invalidOTP);
       }
+    }
+    update();
+  }
+
+  Future<void> resetPassword() async {
+    oldPassword.value = oldPasswordController.text.trim();
+    newPassword.value = newPasswordController.text.trim();
+    confirmPassword.value = confirmPasswordController.text.trim();
+    const passwordPattern =
+        r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[!@#\$&*~]).{6,}$';
+
+    final passwordRegex = RegExp(passwordPattern);
+    isLoading.value = true;
+    if (oldPassword.value.isNotEmpty &&
+        newPassword.value.isNotEmpty &&
+        confirmPassword.value.isNotEmpty &&
+        passwordRegex.hasMatch(newPasswordController.text) &&
+        confirmPassword.value == newPassword.value &&
+        newPassword.value.length > 6) {
+      User? user = FirebaseAuth.instance.currentUser;
+      if (user != null) {
+        try {
+          AuthCredential credential = EmailAuthProvider.credential(
+            email: user.email.toString(),
+            password: oldPasswordController.text.trim(),
+          );
+          await user.reauthenticateWithCredential(credential);
+          await db.updatePassword(newPasswordController.text);
+          showMessageSnackBar(
+              bgColor: Colors.green,
+              StringConstant.passwordChangedSuccessfully);
+          clearController();
+        } on FirebaseAuthException catch (e) {
+          if (e.code == 'wrong-password') {
+            showMessageSnackBar(StringConstant.oldPasswordWasIncorrect);
+          } else if (e.code == 'requires-recent-login') {
+            showMessageSnackBar(
+                StringConstant.pleaseLogInAgainToUpdateYourPassword);
+          } else {
+            showMessageSnackBar('Error: ${e.message}');
+          }
+        } catch (e) {
+          showMessageSnackBar('${StringConstant.anErrorOccurred}$e');
+        } finally {
+          isLoading.value = false;
+          update();
+        }
+      } else {
+        showMessageSnackBar(StringConstant.noUserIsCurrentlyLoggedIn);
+        isLoading.value = false;
+        update();
+      }
+    } else {
+      isLoading.value = false;
+      if (oldPassword.value.isEmpty) {
+        showMessageSnackBar(StringConstant.oldPasswordFieldIsRequired);
+      } else if (newPassword.value.isEmpty) {
+        showMessageSnackBar(StringConstant.newPasswordFieldIsRequired);
+      } else if (confirmPassword.value.isEmpty) {
+        showMessageSnackBar(StringConstant.confirmPasswordFieldIsRequired);
+      } else if (confirmPassword.value != newPassword.value) {
+        showMessageSnackBar(StringConstant.confirmPasswordDoesNotMatch);
+      } else if (newPassword.value.length < 6) {
+        showMessageSnackBar(StringConstant.passwordMustBeLongerThan6Characters);
+      } else if (!passwordRegex.hasMatch(newPasswordController.text)) {
+        showMessageSnackBar(StringConstant.weakPassword);
+      } else {}
+      // update();
     }
     update();
   }
@@ -326,6 +401,13 @@ class AuthController extends GetxController {
     update();
   }
 
+  clearController() {
+    oldPasswordController.clear();
+    newPasswordController.clear();
+    confirmPasswordController.clear();
+    update();
+  }
+
   @override
   void onClose() {
     regEmailController.dispose();
@@ -333,6 +415,9 @@ class AuthController extends GetxController {
     regPasswordController.dispose();
     regMobileNumberController.dispose();
     regOtpController.dispose();
+    oldPasswordController.dispose();
+    newPasswordController.dispose();
+    confirmPasswordController.dispose();
     super.onClose();
   }
 }
