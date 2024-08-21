@@ -401,7 +401,7 @@ class _LoginAndRegisterScreenState extends State<LoginAndRegisterScreen>
                                               BorderRadius.circular(16),
                                         ),
                                       ),
-                                      initialCountryCode: 'IN',
+                                      initialCountryCode: 'US',
                                       onCountryChanged: (Country country) {
                                         authController.countryCode.value =
                                             country.dialCode;

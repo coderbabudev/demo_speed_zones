@@ -96,51 +96,63 @@ class _CircleManagementScreenState extends State<CircleManagementScreen> {
                   return creatorUid == userUid || memberList.contains(userUid);
                 }).toList();
 
-                return ListView.builder(
-                  itemCount: circles.length,
-                  scrollDirection: Axis.vertical,
-                  padding: const EdgeInsets.only(left: 25, right: 25),
-                  shrinkWrap: true,
-                  itemBuilder: (context, index) {
-                    var circleData =
-                        circles[index].data() as Map<String, dynamic>;
-                    String circleName = circleData['circle_name'] ?? 'Unknown';
-
-                    return GestureDetector(
-                      onTap: () {
-                        Get.to(
-                          () => AddNewMemberPage(
-                            circleName: circleName,
-                            circleId: circleData['circle_invite_code'],
-                          ),
-                        );
-                      },
-                      child: AnimationWidget(
-                        animationType: "SCALE",
-                        duration: const Duration(milliseconds: 500),
-                        child: Container(
-                          height: 56,
-                          width: MediaQuery.of(context).size.width,
-                          margin: const EdgeInsets.only(top: 24),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: ColorConstant.lightGreyColor,
-                          ),
-                          child: Center(
-                            child: Text(
-                              circleName,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                color: ColorConstant.blackTextColor,
-                              ),
-                            ),
+                return circles.isEmpty
+                    ? const Center(
+                        child: Text(
+                          "No Circles Found",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w500,
+                            color: ColorConstant.blackTextColor,
                           ),
                         ),
-                      ),
-                    );
-                  },
-                );
+                      )
+                    : ListView.builder(
+                        itemCount: circles.length,
+                        scrollDirection: Axis.vertical,
+                        padding: const EdgeInsets.only(left: 25, right: 25),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          var circleData =
+                              circles[index].data() as Map<String, dynamic>;
+                          String circleName =
+                              circleData['circle_name'] ?? 'Unknown';
+
+                          return GestureDetector(
+                            onTap: () {
+                              Get.to(
+                                () => AddNewMemberPage(
+                                  circleName: circleName,
+                                  circleId: circleData['circle_invite_code'],
+                                ),
+                              );
+                            },
+                            child: AnimationWidget(
+                              animationType: "SCALE",
+                              duration: const Duration(milliseconds: 500),
+                              child: Container(
+                                height: 56,
+                                width: MediaQuery.of(context).size.width,
+                                margin: const EdgeInsets.only(top: 24),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: ColorConstant.lightGreyColor,
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    circleName,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: 16,
+                                      color: ColorConstant.blackTextColor,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          );
+                        },
+                      );
               },
             ),
           ),

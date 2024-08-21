@@ -10,7 +10,6 @@ import 'package:demo_speed_zones/features/dashboard/presentation/pages/dashboard
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
 
 class AuthController extends GetxController {
   final lgnEmailController = TextEditingController();
@@ -24,7 +23,7 @@ class AuthController extends GetxController {
   final confirmPasswordController = TextEditingController();
   final forgetEmailController = TextEditingController();
   final oldPasswordController = TextEditingController();
-  UserDetails userDetails = const UserDetails();
+  UserDetails userData = const UserDetails();
 
   RxBool lgnShowPassword = false.obs;
   RxBool regShowPassword = false.obs;
@@ -67,7 +66,7 @@ class AuthController extends GetxController {
       }
     });
     loadUserCredentials();
-    db.fetchUserdata(userDetails.name.toString());
+    db.fetchUserdata(userData.name.toString());
   }
 
   void lgnRememberMeCheck(bool value) {
@@ -210,20 +209,18 @@ class AuthController extends GetxController {
   }
 
   Future<void> signUpWithPhoneNumber() async {
-    String formattedDate =
-        DateFormat('yyyy MMMM dd, hh:mm a').format(DateTime.now());
-    UserDetails userDetails = UserDetails(
+    final userDetails = UserDetails(
       name: regNameController.text.trim(),
       email: regEmailController.text.trim(),
       countryCode: '+${countryCode.value}',
       phone: regMobileNumberController.text.toString(),
       countryFlag: countryFlag.value,
-      createdAt: formattedDate,
+      createdAt: currentDate,
     );
+    isLoading.value = true;
     if (regMobileNumberController.text.isNotEmpty &&
         regMobileNumberController.text.length == 10 &&
         isMobileRegister.value) {
-      isLoading.value = true;
       await auth.verifyPhoneNumber(
         phoneNumber: '+$countryCode ${regMobileNumberController.text.trim()}',
         verificationCompleted: (PhoneAuthCredential credential) async {},
@@ -283,6 +280,7 @@ class AuthController extends GetxController {
           createdAt: userInfo.createdAt,
           updatedAt: userInfo.updatedAt,
           countryFlag: userInfo.countryFlag,
+          countryCode: userInfo.countryCode,
           isEnable: userInfo.isEnable,
           isDeleted: userInfo.isDeleted,
         );
@@ -298,12 +296,16 @@ class AuthController extends GetxController {
           await SharedPrefs().clear(SharedPrefs.regEmailKey);
           await SharedPrefs().clear(SharedPrefs.regPasswordKey);
         }
+        print("updatedUserInfo :-- $updatedUserInfo");
+        print("updatedUserInfo :-- ${updatedUserInfo.countryCode}");
+        print("updatedUserInfo :-- ${updatedUserInfo.phone}");
         db.createUser(updatedUserInfo);
-        Get.offAll(() => SuccessFullyRegisteredScreen(userInfo: userInfo));
+        Get.offAll(
+            () => SuccessFullyRegisteredScreen(userInfo: updatedUserInfo));
         regOtpController.clear();
       } on FirebaseAuthException catch (e) {
+        regOtpController.clear();
         showMessageSnackBar(e.code);
-        // showMessageSnackBar('Failed to verify OTP. Please try again.');
       }
       isLoading.value = false;
     } else {

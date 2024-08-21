@@ -105,7 +105,8 @@ class _ShareInviteCodeScreenState extends State<ShareInviteCodeScreen> {
                     backgroundColor: Colors.transparent,
                     shadowColor: const Color(0xFFA7A9B7).withOpacity(0.3)),
                 child: circleController.isLoading.value
-                    ? const CircularProgressIndicator()
+                    ? const CircularProgressIndicator(
+                        color: ColorConstant.whiteColor)
                     : const Text(
                         StringConstant.codeShareDone,
                         style: TextStyle(

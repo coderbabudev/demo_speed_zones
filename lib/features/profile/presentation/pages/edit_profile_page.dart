@@ -22,15 +22,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final pfController = Get.find<ProfileController>();
 
   @override
+  void initState() {
+    super.initState();
+    pfController.fetchUserDetails();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
       appBar: AppBar(
         leading: GestureDetector(
-          onTap: () {
-            pfController.fetchUserDetails();
-            Get.back();
-          },
+          onTap: () => Get.back(),
           child: Center(
             child: Container(
               height: 40,
@@ -209,13 +212,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               controller: pfController.phoneNumberController,
               flagsButtonPadding: const EdgeInsets.all(8),
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              textInputAction: TextInputAction.done,
               dropdownIconPosition: IconPosition.trailing,
               dropdownIcon: const Icon(
                 Icons.keyboard_arrow_down_outlined,
                 size: 25,
                 color: ColorConstant.primaryColor,
               ),
-              initialValue: pfController.countryCode.value,
               invalidNumberMessage: '',
               decoration: InputDecoration(
                 hintText: StringConstant.mobileNumber,
@@ -240,7 +243,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   borderRadius: BorderRadius.circular(16),
                 ),
               ),
-              initialCountryCode: "+225",
+              initialCountryCode: '+${pfController.countryCode.value}',
               onCountryChanged: (Country country) {
                 pfController.countryCode.value = country.dialCode;
                 pfController.countryFlag.value = country.flag;

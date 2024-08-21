@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:demo_speed_zones/core/constants/color_constant.dart';
 import 'package:demo_speed_zones/core/constants/image_constant.dart';
 import 'package:demo_speed_zones/core/constants/string_constants.dart';
+import 'package:demo_speed_zones/core/presentation/widget/animation_widget.dart';
 import 'package:demo_speed_zones/core/presentation/widget/authentication_button.dart';
 import 'package:demo_speed_zones/features/profile/presentation/controller/profile_controller.dart';
 import 'package:flutter/material.dart';
@@ -91,102 +92,118 @@ class _AddNewMemberPageState extends State<AddNewMemberPage> {
                             final member =
                                 profileController.circleMembersList[index];
                             final bool isOwner = member['circle_admin_uid'];
-                            return Container(
-                              padding:
-                                  const EdgeInsets.only(bottom: 15, top: 15),
-                              decoration: const BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: ColorConstant.lightGreyColor,
-                                    width: 1,
-                                    style: BorderStyle.solid,
+                            return AnimationWidget(
+                              animationType: "SLIDE",
+                              duration: const Duration(milliseconds: 300),
+                              begin: const Offset(0, 1),
+                              child: Container(
+                                padding:
+                                    const EdgeInsets.only(bottom: 15, top: 15),
+                                decoration: const BoxDecoration(
+                                  border: Border(
+                                    bottom: BorderSide(
+                                      color: ColorConstant.lightGreyColor,
+                                      width: 1,
+                                      style: BorderStyle.solid,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              child: Row(
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(100),
-                                    child: member['image_url'] == null
-                                        ? Image.asset(
-                                            ImageConstant.dummyUser,
-                                            height: 50,
-                                            width: 50,
-                                            fit: BoxFit.cover,
-                                            filterQuality: FilterQuality.high,
-                                          )
-                                        : CachedNetworkImage(
-                                            imageUrl: member['image_url'],
-                                            placeholder: (context, state) =>
-                                                const Center(
-                                              child:
-                                                  CircularProgressIndicator(),
+                                child: Row(
+                                  children: [
+                                    ClipRRect(
+                                      borderRadius: BorderRadius.circular(100),
+                                      child: member['image_url'] == null
+                                          ? Image.asset(
+                                              ImageConstant.dummyUser,
+                                              height: 50,
+                                              width: 50,
+                                              fit: BoxFit.cover,
+                                              filterQuality: FilterQuality.high,
+                                            )
+                                          : CachedNetworkImage(
+                                              imageUrl: member['image_url'],
+                                              placeholder: (context, state) =>
+                                                  const Center(
+                                                child:
+                                                    CircularProgressIndicator(),
+                                              ),
+                                              fit: BoxFit.cover,
+                                              filterQuality: FilterQuality.high,
+                                              height: 50,
+                                              width: 50,
                                             ),
-                                            fit: BoxFit.cover,
-                                            filterQuality: FilterQuality.high,
-                                            height: 50,
-                                            width: 50,
-                                          ),
-                                  ),
-                                  const SizedBox(width: 20),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        Text(
-                                          member['name'] ?? '',
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 16,
-                                            color: ColorConstant.blackTextColor,
-                                          ),
-                                        ),
-                                        Text(
-                                          member['email'] ?? "",
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 12,
-                                            color: ColorConstant.blackTextColor,
-                                          ),
-                                        ),
-                                        Text(
-                                          member['created_at'],
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w400,
-                                            fontSize: 12,
-                                            color: ColorConstant.blackTextColor,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  if (!isOwner) ...[
-                                    GestureDetector(
-                                      onTap: () {},
-                                      child: Image.asset(
-                                        IconConstant.bookmark,
-                                        height: 24,
-                                        width: 24,
-                                        filterQuality: FilterQuality.high,
-                                      ),
                                     ),
                                     const SizedBox(width: 20),
-                                    GestureDetector(
-                                      onTap: () async {
-                                        await profileController
-                                            .deleteCircleMember(
-                                                index, widget.circleId);
-                                      },
-                                      child: Image.asset(
-                                        IconConstant.delete,
-                                        height: 24,
-                                        width: 24,
-                                        filterQuality: FilterQuality.high,
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            member['name'] ?? '',
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 16,
+                                              color:
+                                                  ColorConstant.blackTextColor,
+                                            ),
+                                          ),
+                                          Text(
+                                            member['email'] ?? "",
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                              color:
+                                                  ColorConstant.blackTextColor,
+                                            ),
+                                          ),
+                                          Text(
+                                            member['created_at'],
+                                            style: const TextStyle(
+                                              fontWeight: FontWeight.w400,
+                                              fontSize: 12,
+                                              color:
+                                                  ColorConstant.blackTextColor,
+                                            ),
+                                          ),
+                                        ],
                                       ),
                                     ),
-                                  ]
-                                ],
+                                    if (!isOwner) ...[
+                                      Obx(() {
+                                        return GestureDetector(
+                                          onTap: () => profileController
+                                              .toggleBookMark(index),
+                                          child: Image.asset(
+                                            profileController
+                                                            .bookmarkMembersMap[
+                                                        index] ??
+                                                    false
+                                                ? IconConstant.fillUPBookmark
+                                                : IconConstant.bookmark,
+                                            height: 24,
+                                            width: 24,
+                                            filterQuality: FilterQuality.high,
+                                          ),
+                                        );
+                                      }),
+                                      const SizedBox(width: 20),
+                                      GestureDetector(
+                                        onTap: () async {
+                                          await profileController
+                                              .deleteCircleMember(
+                                                  index, widget.circleId);
+                                        },
+                                        child: Image.asset(
+                                          IconConstant.delete,
+                                          height: 24,
+                                          width: 24,
+                                          filterQuality: FilterQuality.high,
+                                        ),
+                                      ),
+                                    ]
+                                  ],
+                                ),
                               ),
                             );
                           },

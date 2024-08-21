@@ -8,12 +8,12 @@ class InjectableControllers {
   InjectableControllers.inject() {
     Get
       ..put<AuthController>(AuthController(), permanent: true)
-      ..lazyPut<CircleManagementController>(CircleManagementController.new,
-          fenix: true)
+      ..put<CircleManagementController>(CircleManagementController(),
+          permanent: true)
       ..put<DashboardController>(DashboardController(), permanent: true)
-      ..lazyPut<ProfileController>(
-        ProfileController.new,
-        fenix: true,
+      ..put<ProfileController>(
+        ProfileController(),
+        permanent: true,
       );
   }
 }

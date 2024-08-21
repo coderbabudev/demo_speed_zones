@@ -24,6 +24,12 @@ class _ProfilePageState extends State<ProfilePage> {
   final profileController = Get.find<ProfileController>();
 
   @override
+  void initState() {
+    super.initState();
+    profileController.fetchUserDetails();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: ColorConstant.whiteColor,
@@ -117,7 +123,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       }),
                       Obx(() {
                         return Text(
-                          profileController.userPhoneNumber.value,
+                          '${profileController.countryCode.value} ${profileController.userPhoneNumber.value}',
                           style: TextStyle(
                             color: ColorConstant.whiteColor.withOpacity(0.5),
                             fontSize: 13,

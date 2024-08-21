@@ -24,6 +24,7 @@ class ProfileController extends GetxController {
   RxString countryCode = ''.obs;
   RxString countryFlag = ''.obs;
   List<Map<String, dynamic>> circleMembersList = [];
+  List<bool> bookmarkMembersList = [];
   RxBool showOldPassword = false.obs;
   RxBool showConfirmPassword = false.obs;
   final firebaseDBMethod = DatabaseMethod();
@@ -43,12 +44,23 @@ class ProfileController extends GetxController {
 
   @override
   void onInit() {
+    super.onInit();
     generateMainFeature();
     generateOtherFeature();
     showAllLanguages();
     fetchUserDetails();
     clearController();
-    super.onInit();
+  }
+
+  RxMap<int, bool> bookmarkMembersMap = <int, bool>{}.obs;
+
+  void toggleBookMark(int index) {
+    if (bookmarkMembersMap.containsKey(index)) {
+      bookmarkMembersMap[index] = !bookmarkMembersMap[index]!;
+    } else {
+      bookmarkMembersMap[index] = true;
+    }
+    update();
   }
 
   showHideOldPassword() {
@@ -154,11 +166,11 @@ class ProfileController extends GetxController {
 
       String phoneNumber = phoneNumberController.text.trim();
       if (phoneNumber.isNotEmpty ||
-          countryFlag.isNotEmpty ||
-          countryCode.isNotEmpty) {
+          countryFlag.value.isNotEmpty ||
+          countryCode.value.isNotEmpty) {
         updates['phone'] = phoneNumber;
-        updates['country_flag'] = countryFlag.value;
-        updates['country_code'] = '+${countryCode.value}';
+        updates['country_flag'] = countryFlag.value.toString();
+        updates['country_code'] = '+${countryCode.value.toString()}';
       }
       if (updates.isNotEmpty) {
         updates['updated_at'] = updateDate;
@@ -189,23 +201,20 @@ class ProfileController extends GetxController {
 
       if (userSnapshot.exists) {
         final userData = userSnapshot.data() as Map<String, dynamic>;
-        final phoneNumber = userData['phone'].toString();
         userName.value = userData['name'] ?? '';
         userEmail.value = userData['email'] ?? '';
         userImage.value = userData['image_url'] ?? '';
         countryFlag.value = userData['country_flag'] ?? '';
         countryCode.value = userData['country_code'] ?? '';
-        phoneNumberController.text = userData['phone'] ?? '';
-        if (phoneNumber.length >= 10) {
-          userPhoneNumber.value =
-              '${userData['country_code']} ${phoneNumber.substring(0, 3)} ${phoneNumber.substring(3, 6)} ${phoneNumber.substring(6)}';
-        }
+        phoneNumberController.text = userData['phone'].toString();
+        userPhoneNumber.value =
+            '${phoneNumberController.text.substring(0, 3)} ${phoneNumberController.text.substring(3, 6)} ${phoneNumberController.text.substring(6)}';
         update();
       } else {
         return null;
       }
     } catch (e) {
-      print('${StringConstant.errorFetchingUserDetails}$e');
+      debugPrint('${StringConstant.errorFetchingUserDetails}$e');
       return null;
     }
     update();

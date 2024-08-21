@@ -20,6 +20,7 @@ class DatabaseMethod {
         createdAt: userInfo.createdAt,
         updatedAt: userInfo.updatedAt,
         countryFlag: userInfo.countryFlag,
+        countryCode: userInfo.countryCode,
         isPhoneVerified: userInfo.isPhoneVerified,
         isEnable: userInfo.isEnable,
         isDeleted: userInfo.isDeleted,
@@ -64,12 +65,21 @@ class DatabaseMethod {
 
   Future<void> fetchUserdata(String userName) async {
     User? user = _auth.currentUser;
-    FirebaseFirestore.instance
-        .collection('users')
-        .doc(user?.uid)
-        .get()
-        .then((value) {
+    if (user == null) {
+      return;
+    }
+    await _firestore.collection('users').doc(user.uid).get().then((value) {
       userName = value.data()?['name'].toString() ?? '';
     });
+  }
+
+  Future<dynamic> fetchUserProfileData() async {
+    User? user = _auth.currentUser;
+    if (user == null) {
+      return {};
+    }
+    DocumentSnapshot userData =
+        await _firestore.collection('users').doc(user.uid).get();
+    return userData.data();
   }
 }
